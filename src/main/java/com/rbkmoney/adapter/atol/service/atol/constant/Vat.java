@@ -1,0 +1,39 @@
+package com.rbkmoney.adapter.atol.service.atol.constant;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+@Getter
+@RequiredArgsConstructor
+public enum Vat {
+
+    VAT_0("0%", Tax.VAT0.getCode(), "0% НДС"),
+    VAT_10("10%", Tax.VAT10.getCode(), "10% НДС"),
+    VAT_18("18%", Tax.VAT18.getCode(), "18% НДС"),
+    VAT_20("20%", Tax.VAT20.getCode(), "20% НДС"),
+    NO_VAT("null", Tax.NONE.getCode(), "Без НДС"),
+    VAT_10_110("10/110", Tax.VAT110.getCode(), "10/110 НДС"),
+    VAT_18_118("18/118", Tax.VAT118.getCode(), "18/118 НДС"),
+    VAT_20_120("20/120", Tax.VAT120.getCode(), "20/120 НДС");
+
+    private final String codeText;
+    private final String code;
+    private final String message;
+
+    /**
+     * Return the enum constant of this type with the specified numeric value.
+     *
+     * @param codeText the string value of the enum to be returned
+     * @return the enum constant with the specified numeric value
+     * @throws IllegalArgumentException if this enum has no constant for the specified numeric value
+     */
+    public static Vat codeTextOf(String codeText) {
+        for (Vat vat : values()) {
+            if (vat.codeText.equals(codeText)) {
+                return vat;
+            }
+        }
+        throw new IllegalArgumentException("No matching for [" + codeText + "]");
+    }
+
+}
