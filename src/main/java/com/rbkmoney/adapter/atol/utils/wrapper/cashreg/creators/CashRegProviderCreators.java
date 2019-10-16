@@ -1,31 +1,23 @@
 package com.rbkmoney.adapter.atol.utils.wrapper.cashreg.creators;
 
-import com.rbkmoney.cashreg.proto.provider.*;
+
+import com.rbkmoney.damsel.cashreg.CashRegInfo;
+import com.rbkmoney.damsel.cashreg.base.Timer;
+import com.rbkmoney.damsel.cashreg.provider.*;
+import com.rbkmoney.damsel.domain.Failure;
 
 public class CashRegProviderCreators {
 
-    public static Intent createFinishIntentSuccess(String uuid) {
-        return Intent.finish(new FinishIntent(createFinishStatusSuccess(uuid)));
-    }
-
-    public static Intent createFinishIntentSuccess(Payload payload) {
-        return Intent.finish(new FinishIntent(createFinishStatusSuccess(payload)));
+    public static Intent createFinishIntentSuccess() {
+        return Intent.finish(new FinishIntent(createFinishStatusSuccess()));
     }
 
     public static Intent createFinishIntentFailure(Failure failure) {
         return Intent.finish(new FinishIntent(createFinishStatusFailure(failure)));
     }
 
-    public static FinishStatus createFinishStatusSuccess(String uuid) {
-        Success success = new Success();
-        success.setUuid(uuid);
-        return FinishStatus.success(success);
-    }
-
-    public static FinishStatus createFinishStatusSuccess(Payload payload) {
-        Success success = new Success();
-        success.setPayload(payload);
-        return FinishStatus.success(success);
+    public static FinishStatus createFinishStatusSuccess() {
+        return FinishStatus.success(new Success());
     }
 
     public static FinishStatus createFinishStatusFailure(Failure failure) {
@@ -40,18 +32,24 @@ public class CashRegProviderCreators {
         return createFailure(code, code);
     }
 
-    public static Failure createFailure(String code, String message) {
-        Failure failure = new Failure();
-        failure.setCode(code);
-        failure.setDescription(message);
-        return failure;
+    public static Failure createFailure(String code, String reason) {
+        return new Failure().setCode(code).setReason(reason);
     }
 
-    public static CashRegResult createCashRegResult(Intent intent, String originalResponse) {
-        CashRegResult cashRegResult = new CashRegResult();
-        cashRegResult.setIntent(intent);
-        cashRegResult.setOriginalResponse(originalResponse);
-        return cashRegResult;
+    public static CashRegResult createCashRegResult(Intent intent, byte[] state, CashRegInfo cashRegInfo) {
+        return new CashRegResult().setIntent(intent).setCashregInfo(cashRegInfo).setState(state);
+    }
+
+    public static Intent createIntentWithSleepIntent(Integer timer) {
+        return Intent.sleep(createSleepIntent(createTimerTimeout(timer)));
+    }
+
+    public static SleepIntent createSleepIntent(Timer timer) {
+        return new SleepIntent(timer);
+    }
+
+    public static Timer createTimerTimeout(Integer timeout) {
+        return Timer.timeout(timeout);
     }
 
 }

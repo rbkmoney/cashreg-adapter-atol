@@ -2,13 +2,9 @@ package com.rbkmoney.adapter.atol.service.atol;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.rbkmoney.adapter.atol.configuration.properties.AtolProperties;
 import com.rbkmoney.adapter.atol.service.atol.constant.Operations;
 import com.rbkmoney.adapter.atol.service.atol.model.request.CommonRequest;
-import com.rbkmoney.adapter.atol.service.atol.model.request.GetTokenRequest;
 import com.rbkmoney.adapter.atol.service.atol.model.response.CommonResponse;
-import com.rbkmoney.adapter.atol.service.atol.model.response.GetTokenResponse;
-import com.rbkmoney.adapter.atol.service.atol.model.response.ReportResponse;
 import com.rbkmoney.adapter.atol.utils.ConverterIp;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -37,19 +33,18 @@ public class AtolApi {
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
     private final ConverterIp converterIp;
-    private final AtolProperties atolProperties;
 
-    public ResponseEntity<GetTokenResponse> getToken() {
+    public ResponseEntity<CommonResponse> getToken(String login, String password) {
         String url = converterIp.replaceIpv4ToIpv6(this.url + "getToken");
         log.info("Atol getToken URL {}", url);
 
-        GetTokenRequest request = new GetTokenRequest();
+        CommonRequest request = new CommonRequest();
         request.setLogin(login);
         request.setPass(password);
         try {
             String body = objectMapper.writeValueAsString(request);
             HttpEntity httpEntity = new HttpEntity(body, getHttpHeaders());
-            ResponseEntity<GetTokenResponse> response = restTemplate.exchange(url, HttpMethod.POST, httpEntity, GetTokenResponse.class);
+            ResponseEntity<CommonResponse> response = restTemplate.exchange(url, HttpMethod.POST, httpEntity, CommonResponse.class);
             log.info("{} with response: {}", "getToken", response);
             return response;
         } catch (JsonProcessingException ex) {
@@ -102,23 +97,22 @@ public class AtolApi {
     /**
      * Получение информации о чеке по uuid-у
      */
-    public ResponseEntity<ReportResponse> report(String uuid) {
+    public ResponseEntity<CommonResponse> report(String uuid) {
         String url = converterIp.replaceIpv4ToIpv6(this.url + group + "/report/" + uuid + "?token=" + apiToken);
         log.info("{} with url: {}", "report", url);
-        ResponseEntity<ReportResponse> response = restTemplate.exchange(url, HttpMethod.GET, HttpEntity.EMPTY, ReportResponse.class);
+        ResponseEntity<CommonResponse> response = restTemplate.exchange(url, HttpMethod.GET, HttpEntity.EMPTY, CommonResponse.class);
         log.info("{} with response: {}", "report", response);
         return response;
     }
 
     private ResponseEntity send(CommonRequest request, String operation) {
-
         try {
             String body = objectMapper.writeValueAsString(request);
             log.info("{} with request: {}", operation, body);
 
             HttpEntity httpEntity = new HttpEntity(body, getHttpHeaders());
             String url = converterIp.replaceIpv4ToIpv6(this.url + group + "/" + operation + "?token=" + apiToken);
-            log.info("atol v4 send URL {}", url);
+            log.info("atol send URL {}", url);
 
             ResponseEntity<CommonResponse> responseEntity = restTemplate.exchange(url, HttpMethod.POST, httpEntity, CommonResponse.class);
             log.info("{} with response: {}", operation, responseEntity);

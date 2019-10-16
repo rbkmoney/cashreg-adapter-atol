@@ -23,13 +23,6 @@ public enum Tax {
     private final String code;
     private final String message;
 
-    /**
-     * Return the enum constant of this type with the specified string value.
-     *
-     * @param code the string value of the enum to be returned
-     * @return the enum constant with the specified numeric value
-     * @throws IllegalArgumentException if this enum has no constant for the specified numeric value
-     */
     public static Tax fromStringValue(String code) {
         for (Tax value : values()) {
             if (value.code.equals(code)) {

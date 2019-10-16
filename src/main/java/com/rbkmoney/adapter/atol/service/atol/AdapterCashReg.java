@@ -1,18 +1,20 @@
 package com.rbkmoney.adapter.atol.service.atol;
 
-import com.rbkmoney.cashreg.proto.provider.CashRegContext;
-import org.springframework.http.ResponseEntity;
+
+import com.rbkmoney.adapter.atol.service.atol.model.request.CommonRequest;
+import com.rbkmoney.adapter.atol.service.atol.model.request.RequestWrapper;
+import com.rbkmoney.adapter.atol.service.atol.model.response.CommonResponse;
 
 public interface AdapterCashReg {
 
-    ResponseEntity<?> debit(CashRegContext context);
+    CommonResponse debit(RequestWrapper<CommonRequest> request);
 
-    ResponseEntity<?> credit(CashRegContext context);
+    CommonResponse credit(RequestWrapper<CommonRequest> request);
 
-    ResponseEntity<?> refundDebit(CashRegContext context);
+    CommonResponse refundDebit(RequestWrapper<CommonRequest> request);
 
-    ResponseEntity<?> refundCredit(CashRegContext context);
+    CommonResponse refundCredit(RequestWrapper<CommonRequest> request);
 
-    ResponseEntity<?> getStatus(CashRegContext context);
+    CommonResponse status(RequestWrapper<CommonRequest> request);
 
 }

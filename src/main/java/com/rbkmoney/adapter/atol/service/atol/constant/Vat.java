@@ -20,13 +20,6 @@ public enum Vat {
     private final String code;
     private final String message;
 
-    /**
-     * Return the enum constant of this type with the specified numeric value.
-     *
-     * @param codeText the string value of the enum to be returned
-     * @return the enum constant with the specified numeric value
-     * @throws IllegalArgumentException if this enum has no constant for the specified numeric value
-     */
     public static Vat codeTextOf(String codeText) {
         for (Vat vat : values()) {
             if (vat.codeText.equals(codeText)) {

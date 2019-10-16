@@ -1,7 +1,6 @@
 package com.rbkmoney.adapter.atol.service.atol.constant;
 
 import com.rbkmoney.adapter.atol.service.atol.model.response.CommonResponse;
-import com.rbkmoney.adapter.atol.service.atol.model.response.ReportResponse;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -32,28 +31,17 @@ public enum Status {
 
     private final String value;
 
-    public static boolean isWait(ReportResponse reportResponse) {
-        return Status.WAIT.getValue().equalsIgnoreCase(reportResponse.getStatus());
+
+    public static boolean isWait(CommonResponse response) {
+        return Status.WAIT.getValue().equalsIgnoreCase(response.getStatus());
     }
 
-    public static boolean isDone(ReportResponse reportResponse) {
-        return Status.DONE.getValue().equalsIgnoreCase(reportResponse.getStatus());
+    public static boolean isDone(CommonResponse response) {
+        return Status.DONE.getValue().equalsIgnoreCase(response.getStatus());
     }
 
-    public static boolean isFail(ReportResponse reportResponse) {
-        return Status.FAIL.getValue().equalsIgnoreCase(reportResponse.getStatus());
-    }
-
-    public static boolean isWait(CommonResponse reportResponse) {
-        return Status.WAIT.getValue().equalsIgnoreCase(reportResponse.getStatus());
-    }
-
-    public static boolean isDone(CommonResponse reportResponse) {
-        return Status.DONE.getValue().equalsIgnoreCase(reportResponse.getStatus());
-    }
-
-    public static boolean isFail(CommonResponse reportResponse) {
-        return Status.FAIL.getValue().equalsIgnoreCase(reportResponse.getStatus());
+    public static boolean isFail(CommonResponse response) {
+        return Status.FAIL.getValue().equalsIgnoreCase(response.getStatus());
     }
 
 }
