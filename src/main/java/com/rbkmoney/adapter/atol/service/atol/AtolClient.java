@@ -71,9 +71,7 @@ public class AtolClient implements AdapterCashReg {
         api.setUrl(request.getUrl());
         api.setCompany(request.getCompany());
         api.setAddress(request.getCompanyAddress());
-        if (request.getGroup() != null) {
-            api.setGroup(request.getGroup());
-        }
+        api.setGroup(request.getGroup());
         return api;
     }
 

@@ -17,7 +17,9 @@ public enum OptionalField {
     COMPANY("company"),
     COMPANY_ADDRESS("company_address"),
     POLLING_DELAY("polling_delay"),
-    MAX_TIME_POLLING("max_time_polling");
+    MAX_TIME_POLLING("max_time_polling"),
+    TIMER_TIMEOUT("timer_timeout"),
+    TIMER_ADD_TIME("timer_add_time");
 
     private final String field;
 }

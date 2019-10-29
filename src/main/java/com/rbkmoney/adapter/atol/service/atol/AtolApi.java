@@ -105,17 +105,17 @@ public class AtolApi {
         return response;
     }
 
-    private ResponseEntity send(CommonRequest request, String operation) {
+    private ResponseEntity send(CommonRequest request, Operations operation) {
         try {
             String body = objectMapper.writeValueAsString(request);
             log.info("{} with request: {}", operation, body);
 
             HttpEntity httpEntity = new HttpEntity(body, getHttpHeaders());
-            String url = converterIp.replaceIpv4ToIpv6(this.url + group + "/" + operation + "?token=" + apiToken);
+            String url = converterIp.replaceIpv4ToIpv6(this.url + group + "/" + operation.getOperation() + "?token=" + apiToken);
             log.info("atol send URL {}", url);
 
             ResponseEntity<CommonResponse> responseEntity = restTemplate.exchange(url, HttpMethod.POST, httpEntity, CommonResponse.class);
-            log.info("{} with response: {}", operation, responseEntity);
+            log.info("{} with response: {}", operation.getOperation(), responseEntity);
             return responseEntity;
         } catch (JsonProcessingException ex) {
             throw new RuntimeException(ex);

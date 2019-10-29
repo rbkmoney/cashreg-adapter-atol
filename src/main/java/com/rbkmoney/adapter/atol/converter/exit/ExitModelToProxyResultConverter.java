@@ -58,6 +58,7 @@ public class ExitModelToProxyResultConverter implements Converter<ExitStateModel
         CashRegResult cashRegResult = new CashRegResult()
                 .setIntent(intent)
                 .setState(serializer.writeByte(entryStateModel.getStateModel().getAdapterContext()));
+
         if (exitStateModel.getCashRegInfo() != null) {
             entryStateModel.getStateModel().setStep(Step.CHECK_STATUS);
             cashRegResult.setCashregInfo(exitStateModel.getCashRegInfo());

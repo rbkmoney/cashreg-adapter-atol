@@ -16,9 +16,8 @@ public class ProcessorConfiguration {
 
     @Bean
     public Processor<ExitStateModel, EntryStateModel, CommonResponse> responseProcessorChain() {
-        SuccessProcessor successProcessor = new SuccessProcessor(null);
-        return new ErrorProcessor(successProcessor);
+        ErrorProcessor errorProcessor = new ErrorProcessor();
+        return new SuccessProcessor(errorProcessor);
     }
-
 
 }

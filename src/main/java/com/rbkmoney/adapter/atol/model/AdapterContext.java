@@ -18,8 +18,13 @@ public class AdapterContext {
 
     @JsonProperty(value = "max_date_time_polling")
     private Instant maxDateTimePolling;
+
     private Step nextStep;
+
     @JsonProperty(value = "cashreg_id")
     private String cashRegId;
+
+    @JsonProperty(value = "receipt_id")
+    private String receiptId;
 
 }

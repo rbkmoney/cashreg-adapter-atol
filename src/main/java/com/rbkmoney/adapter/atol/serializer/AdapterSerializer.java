@@ -2,6 +2,7 @@ package com.rbkmoney.adapter.atol.serializer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rbkmoney.adapter.atol.model.AdapterContext;
+import com.rbkmoney.adapter.common.serializer.StateSerializer;
 import com.rbkmoney.damsel.cashreg.provider.CashRegContext;
 import org.springframework.stereotype.Component;
 

@@ -3,6 +3,9 @@ package com.rbkmoney.adapter.atol.service.atol.constant;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Система налогообложения
  */
@@ -20,22 +23,23 @@ public enum Sno {
     private final String code;
     private final String message;
 
+    private static final Map<String, Sno> SNO_MAP = new HashMap<>();
 
-    /**
-     * Return the enum constant of this type with the specified string value.
-     *
-     * @param code the string value of the enum to be returned
-     * @return the enum constant with the specified numeric value
-     * @throws IllegalArgumentException if this enum has no constant for the specified numeric value
-     */
-    public static Sno fromStringValue(String code) {
-        for (Sno value : values()) {
-            if (value.code.equals(code)) {
-                return value;
-            }
+    static {
+        for (Sno value : Sno.values()) {
+            SNO_MAP.put(value.name(), value);
         }
-        throw new IllegalArgumentException("No matching for [" + code + "]");
     }
 
+    public static Sno fromString(String value) {
+        if (value == null) {
+            throw new NullPointerException("value null");
+        }
+        Sno sno = SNO_MAP.get(value);
+        if (sno == null) {
+            throw new IllegalArgumentException("No matching for [" + value + "]");
+        }
+        return sno;
+    }
 
 }

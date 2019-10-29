@@ -41,7 +41,9 @@ public class CtxToEntryModelConverter implements Converter<CashRegContext, Entry
                 .build();
         builder.auth(auth);
 
-        Client client = Client.builder().email(context.getSourceCreation().getPayment().getEmail()).build();
+        Client client = Client.builder()
+                .email(context.getSourceCreation().getPayment().getEmail())
+                .build();
         builder.client(client);
 
         RussianLegalEntity russianLegalEntity = context.getAccountInfo().getLegalEntity().getRussianLegalEntity();
