@@ -32,9 +32,6 @@ public enum Sno {
     }
 
     public static Sno fromString(String value) {
-        if (value == null) {
-            throw new NullPointerException("value null");
-        }
         Sno sno = SNO_MAP.get(value);
         if (sno == null) {
             throw new IllegalArgumentException("No matching for [" + value + "]");

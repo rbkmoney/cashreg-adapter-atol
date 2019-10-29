@@ -3,6 +3,9 @@ package com.rbkmoney.adapter.atol.service.atol.constant;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Устанавливает номер налога в ККТ
  */
@@ -23,13 +26,20 @@ public enum Tax {
     private final String code;
     private final String message;
 
-    public static Tax fromStringValue(String code) {
-        for (Tax value : values()) {
-            if (value.code.equals(code)) {
-                return value;
-            }
+    private static final Map<String, Tax> TAX_MAP = new HashMap<>();
+
+    static {
+        for (Tax value : Tax.values()) {
+            TAX_MAP.put(value.name(), value);
         }
-        throw new IllegalArgumentException("No matching for [" + code + "]");
+    }
+
+    public static Tax fromString(String value) {
+        Tax tax = TAX_MAP.get(value);
+        if (tax == null) {
+            throw new IllegalArgumentException("No matching for [" + value + "]");
+        }
+        return tax;
     }
 
 

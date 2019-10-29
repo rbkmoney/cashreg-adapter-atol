@@ -2,6 +2,7 @@ package com.rbkmoney.adapter.atol.client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rbkmoney.adapter.atol.configuration.properties.AtolProperties;
+import com.rbkmoney.adapter.atol.service.atol.AtolApi;
 import com.rbkmoney.adapter.atol.service.atol.AtolClient;
 import com.rbkmoney.adapter.atol.utils.ConverterIp;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -15,7 +16,7 @@ public class AtolClientconfiguration {
 
     @Bean
     AtolClient atolClient(ObjectMapper objectMapper, RestTemplate restTemplate) {
-        return new AtolClient(restTemplate, objectMapper, new ConverterIp());
+        return new AtolClient(new AtolApi(restTemplate, objectMapper, new ConverterIp()));
     }
 
 }

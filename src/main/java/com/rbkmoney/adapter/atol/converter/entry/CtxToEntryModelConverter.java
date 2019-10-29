@@ -2,9 +2,9 @@ package com.rbkmoney.adapter.atol.converter.entry;
 
 import com.rbkmoney.adapter.atol.constant.OptionalField;
 import com.rbkmoney.adapter.atol.constant.TargetType;
+import com.rbkmoney.adapter.atol.converter.CashRegAdapterContextConveter;
 import com.rbkmoney.adapter.atol.flow.TargetTypeResolver;
 import com.rbkmoney.adapter.atol.model.*;
-import com.rbkmoney.adapter.atol.serializer.AdapterSerializer;
 import com.rbkmoney.adapter.atol.service.atol.model.*;
 import com.rbkmoney.damsel.cashreg.Cart;
 import com.rbkmoney.damsel.cashreg.provider.CashRegContext;
@@ -23,12 +23,12 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class CtxToEntryModelConverter implements Converter<CashRegContext, EntryStateModel> {
 
-    private final AdapterSerializer serializer;
     private final TargetTypeResolver resolveTargetType;
+    private final CashRegAdapterContextConveter cashRegAdapterContextConveter;
 
     @Override
     public EntryStateModel convert(CashRegContext context) {
-        AdapterContext adapterContext = serializer.getAdapterContext(context);
+        AdapterContext adapterContext = cashRegAdapterContextConveter.convert(context);
         TargetType targetType = resolveTargetType.resolve(context.getSession().getType());
 
         Map<String, String> options = context.getOptions();

@@ -1,16 +1,13 @@
 package com.rbkmoney.adapter.atol.service.atol;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rbkmoney.adapter.atol.service.atol.model.request.CommonRequest;
 import com.rbkmoney.adapter.atol.service.atol.model.request.RequestWrapper;
 import com.rbkmoney.adapter.atol.service.atol.model.response.CommonResponse;
-import com.rbkmoney.adapter.atol.utils.ConverterIp;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.RestTemplate;
 
 @Slf4j
 @Getter
@@ -18,61 +15,45 @@ import org.springframework.web.client.RestTemplate;
 @RequiredArgsConstructor
 public class AtolClient implements AdapterCashReg {
 
-    private final RestTemplate restTemplate;
-    private final ObjectMapper objectMapper;
-    private final ConverterIp converterIp;
+    private final AtolApi api;
 
     @Override
-    public CommonResponse debit(RequestWrapper<CommonRequest> request) {
-        AtolApi api = prepareAtolApi(request);
-        api.setApiToken(extractToken(request, api));
-        ResponseEntity<CommonResponse> responseEntity = api.sell(request.getRequest());
+    public CommonResponse debit(RequestWrapper<CommonRequest> requestWrapper) {
+        requestWrapper.setToken(extractToken(requestWrapper, api));
+        ResponseEntity<CommonResponse> responseEntity = api.sell(requestWrapper);
         return responseEntity.getBody();
     }
 
     @Override
-    public CommonResponse credit(RequestWrapper<CommonRequest> request) {
-        AtolApi api = prepareAtolApi(request);
-        api.setApiToken(extractToken(request, api));
-        ResponseEntity<CommonResponse> responseEntity = api.buy(request.getRequest());
+    public CommonResponse credit(RequestWrapper<CommonRequest> requestWrapper) {
+        requestWrapper.setToken(extractToken(requestWrapper, api));
+        ResponseEntity<CommonResponse> responseEntity = api.buy(requestWrapper);
         return responseEntity.getBody();
     }
 
     @Override
-    public CommonResponse refundDebit(RequestWrapper<CommonRequest> request) {
-        AtolApi api = prepareAtolApi(request);
-        api.setApiToken(extractToken(request, api));
-        ResponseEntity<CommonResponse> responseEntity = api.sellRefund(request.getRequest());
+    public CommonResponse refundDebit(RequestWrapper<CommonRequest> requestWrapper) {
+        requestWrapper.setToken(extractToken(requestWrapper, api));
+        ResponseEntity<CommonResponse> responseEntity = api.sellRefund(requestWrapper);
         return responseEntity.getBody();
     }
 
     @Override
-    public CommonResponse refundCredit(RequestWrapper<CommonRequest> request) {
-        AtolApi api = prepareAtolApi(request);
-        api.setApiToken(extractToken(request, api));
-        ResponseEntity<CommonResponse> responseEntity = api.buyCorrection(request.getRequest());
+    public CommonResponse refundCredit(RequestWrapper<CommonRequest> requestWrapper) {
+        requestWrapper.setToken(extractToken(requestWrapper, api));
+        ResponseEntity<CommonResponse> responseEntity = api.buyCorrection(requestWrapper);
         return responseEntity.getBody();
     }
 
     @Override
-    public CommonResponse status(RequestWrapper<CommonRequest> request) {
-        AtolApi api = prepareAtolApi(request);
-        api.setApiToken(extractToken(request, api));
-        ResponseEntity<CommonResponse> responseEntity = api.report(request.getRequest().getExternalId());
+    public CommonResponse status(RequestWrapper<CommonRequest> requestWrapper) {
+        requestWrapper.setToken(extractToken(requestWrapper, api));
+        ResponseEntity<CommonResponse> responseEntity = api.report(requestWrapper);
         return responseEntity.getBody();
     }
 
-    private String extractToken(RequestWrapper<CommonRequest> request, AtolApi api) {
-        return api.getToken(request.getRequest().getLogin(), request.getRequest().getPass()).getBody().getToken();
-    }
-
-    private AtolApi prepareAtolApi(RequestWrapper<CommonRequest> request) {
-        AtolApi api = new AtolApi(restTemplate, objectMapper, converterIp);
-        api.setUrl(request.getUrl());
-        api.setCompany(request.getCompany());
-        api.setAddress(request.getCompanyAddress());
-        api.setGroup(request.getGroup());
-        return api;
+    private String extractToken(RequestWrapper<CommonRequest> requestWrapper, AtolApi api) {
+        return api.getToken(requestWrapper).getBody().getToken();
     }
 
 }

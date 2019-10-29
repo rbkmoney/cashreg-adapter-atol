@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rbkmoney.adapter.atol.service.atol.constant.Operations;
 import com.rbkmoney.adapter.atol.service.atol.model.request.CommonRequest;
+import com.rbkmoney.adapter.atol.service.atol.model.request.RequestWrapper;
 import com.rbkmoney.adapter.atol.service.atol.model.response.CommonResponse;
 import com.rbkmoney.adapter.atol.utils.ConverterIp;
 import lombok.Getter;
@@ -19,28 +20,17 @@ import org.springframework.web.client.RestTemplate;
 @RequiredArgsConstructor
 public class AtolApi {
 
-    private String company;
-    private String inn;
-    private String address;
-    private String group;
-
-    private String url;
-
-    private String login;
-    private String password;
-    private String apiToken;
-
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
     private final ConverterIp converterIp;
 
-    public ResponseEntity<CommonResponse> getToken(String login, String password) {
-        String url = converterIp.replaceIpv4ToIpv6(this.url + "getToken");
+    public ResponseEntity<CommonResponse> getToken(RequestWrapper<CommonRequest> requestWrapper) {
+        String url = converterIp.replaceIpv4ToIpv6(requestWrapper.getUrl() + "getToken");
         log.info("Atol getToken URL {}", url);
 
         CommonRequest request = new CommonRequest();
-        request.setLogin(login);
-        request.setPass(password);
+        request.setLogin(requestWrapper.getRequest().getLogin());
+        request.setPass(requestWrapper.getRequest().getPass());
         try {
             String body = objectMapper.writeValueAsString(request);
             HttpEntity httpEntity = new HttpEntity(body, getHttpHeaders());
@@ -55,63 +45,63 @@ public class AtolApi {
     /**
      * Чек «Приход»
      */
-    public ResponseEntity<CommonResponse> sell(CommonRequest request) {
-        return send(request, Operations.SELL);
+    public ResponseEntity<CommonResponse> sell(RequestWrapper<CommonRequest> requestWrapper) {
+        return send(requestWrapper, Operations.SELL);
     }
 
     /**
      * чек «Возврат прихода»
      */
-    public ResponseEntity<CommonResponse> sellRefund(CommonRequest request) {
-        return send(request, Operations.SELL_REFUND);
+    public ResponseEntity<CommonResponse> sellRefund(RequestWrapper<CommonRequest> requestWrapper) {
+        return send(requestWrapper, Operations.SELL_REFUND);
     }
 
     /**
      * чек «Коррекция прихода»
      */
-    public ResponseEntity<CommonResponse> sellCorrection(CommonRequest request) {
-        return send(request, Operations.SELL_CORRECTION);
+    public ResponseEntity<CommonResponse> sellCorrection(RequestWrapper<CommonRequest> requestWrapper) {
+        return send(requestWrapper, Operations.SELL_CORRECTION);
     }
 
     /**
      * чек «Расход»
      */
-    public ResponseEntity<CommonResponse> buy(CommonRequest request) {
-        return send(request, Operations.BUY);
+    public ResponseEntity<CommonResponse> buy(RequestWrapper<CommonRequest> requestWrapper) {
+        return send(requestWrapper, Operations.BUY);
     }
 
     /**
      * чек «Возврат расхода»
      */
-    public ResponseEntity<CommonResponse> buyRefund(CommonRequest request) {
-        return send(request, Operations.BUY_REFUND);
+    public ResponseEntity<CommonResponse> buyRefund(RequestWrapper<CommonRequest> requestWrapper) {
+        return send(requestWrapper, Operations.BUY_REFUND);
     }
 
     /**
      * чек «Коррекция расхода»
      */
-    public ResponseEntity<CommonResponse> buyCorrection(CommonRequest request) {
-        return send(request, Operations.BUY_CORRECTION);
+    public ResponseEntity<CommonResponse> buyCorrection(RequestWrapper<CommonRequest> requestWrapper) {
+        return send(requestWrapper, Operations.BUY_CORRECTION);
     }
 
     /**
      * Получение информации о чеке по uuid-у
      */
-    public ResponseEntity<CommonResponse> report(String uuid) {
-        String url = converterIp.replaceIpv4ToIpv6(this.url + group + "/report/" + uuid + "?token=" + apiToken);
+    public ResponseEntity<CommonResponse> report(RequestWrapper<CommonRequest> requestWrapper) {
+        String url = converterIp.replaceIpv4ToIpv6(requestWrapper.getUrl() + requestWrapper.getGroup() + "/report/" + requestWrapper.getRequest().getExternalId() + "?token=" + requestWrapper.getToken());
         log.info("{} with url: {}", "report", url);
         ResponseEntity<CommonResponse> response = restTemplate.exchange(url, HttpMethod.GET, HttpEntity.EMPTY, CommonResponse.class);
         log.info("{} with response: {}", "report", response);
         return response;
     }
 
-    private ResponseEntity send(CommonRequest request, Operations operation) {
+    private ResponseEntity send(RequestWrapper<CommonRequest> requestWrapper, Operations operation) {
         try {
-            String body = objectMapper.writeValueAsString(request);
+            String body = objectMapper.writeValueAsString(requestWrapper.getRequest());
             log.info("{} with request: {}", operation, body);
 
             HttpEntity httpEntity = new HttpEntity(body, getHttpHeaders());
-            String url = converterIp.replaceIpv4ToIpv6(this.url + group + "/" + operation.getOperation() + "?token=" + apiToken);
+            String url = converterIp.replaceIpv4ToIpv6(requestWrapper.getUrl() + requestWrapper.getGroup() + "/" + operation.getOperation() + "?token=" + requestWrapper.getToken());
             log.info("atol send URL {}", url);
 
             ResponseEntity<CommonResponse> responseEntity = restTemplate.exchange(url, HttpMethod.POST, httpEntity, CommonResponse.class);

@@ -11,4 +11,5 @@ public class RequestWrapper<R> {
     private String group;
     private String company;
     private String companyAddress;
+    private String token;
 }
