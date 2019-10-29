@@ -45,7 +45,7 @@ public class SuccessProcessor implements Processor<ExitStateModel, EntryStateMod
         } else if (nextProcessor != null) {
             return nextProcessor.process(response, entryStateModel);
         }
-        return null;
+        throw new RuntimeException("Unknown Processor");
     }
 
 }
