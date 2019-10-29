@@ -18,6 +18,8 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class EntryStateToCommonRequestConverter implements Converter<EntryStateModel, RequestWrapper<CommonRequest>> {
 
+    private final static String DEFAULT_EMPTY_VALUE_TOKEN_API = "";
+
     @Override
     public RequestWrapper<CommonRequest> convert(EntryStateModel entryStateModel) {
         OperationModel operationModel = entryStateModel.getOperationModel();
@@ -56,7 +58,8 @@ public class EntryStateToCommonRequestConverter implements Converter<EntryStateM
                 operationModel.getOptions().get(OptionalField.URL.getField()),
                 operationModel.getOptions().get(OptionalField.GROUP.getField()),
                 operationModel.getOptions().get(OptionalField.COMPANY.getField()),
-                operationModel.getOptions().get(OptionalField.COMPANY_ADDRESS.getField())
+                operationModel.getOptions().get(OptionalField.COMPANY_ADDRESS.getField()),
+                DEFAULT_EMPTY_VALUE_TOKEN_API
         );
     }
 
