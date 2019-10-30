@@ -6,7 +6,7 @@ import com.rbkmoney.adapter.atol.service.atol.constant.Operations;
 import com.rbkmoney.adapter.atol.service.atol.model.request.CommonRequest;
 import com.rbkmoney.adapter.atol.service.atol.model.request.RequestWrapper;
 import com.rbkmoney.adapter.atol.service.atol.model.response.CommonResponse;
-import com.rbkmoney.adapter.atol.utils.ConverterIp;
+import com.rbkmoney.adapter.cashreg.spring.boot.starter.utils.converter.ip.ConverterIp;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;

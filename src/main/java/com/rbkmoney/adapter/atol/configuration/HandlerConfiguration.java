@@ -1,7 +1,7 @@
 package com.rbkmoney.adapter.atol.configuration;
 
-import com.rbkmoney.adapter.atol.converter.CashRegAdapterServiceLogDecorator;
 import com.rbkmoney.adapter.atol.handler.AtolServerHandler;
+import com.rbkmoney.adapter.cashreg.spring.boot.starter.converter.CashRegAdapterServiceLogDecorator;
 import com.rbkmoney.damsel.cashreg.provider.CashRegProviderSrv;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;

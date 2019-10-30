@@ -1,6 +1,6 @@
 package com.rbkmoney.adapter.atol.servlet;
 
-import com.rbkmoney.adapter.atol.converter.CashRegAdapterServiceLogDecorator;
+import com.rbkmoney.adapter.cashreg.spring.boot.starter.converter.CashRegAdapterServiceLogDecorator;
 import com.rbkmoney.damsel.cashreg.provider.CashRegProviderSrv;
 import com.rbkmoney.woody.thrift.impl.http.THServiceBuilder;
 import lombok.RequiredArgsConstructor;

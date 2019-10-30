@@ -1,14 +1,13 @@
 package com.rbkmoney.adapter.atol.converter.exit;
 
 
-import com.rbkmoney.adapter.atol.configuration.TimerProperties;
-import com.rbkmoney.adapter.atol.constant.OptionalField;
-import com.rbkmoney.adapter.atol.model.AdapterContext;
-import com.rbkmoney.adapter.atol.model.EntryStateModel;
-import com.rbkmoney.adapter.atol.model.ExitStateModel;
-import com.rbkmoney.adapter.atol.model.Step;
-import com.rbkmoney.adapter.atol.serializer.AdapterSerializer;
-import com.rbkmoney.adapter.atol.utils.wrapper.cashreg.creators.CashRegProviderCreators;
+import com.rbkmoney.adapter.cashreg.spring.boot.starter.config.properties.TimerProperties;
+import com.rbkmoney.adapter.cashreg.spring.boot.starter.model.AdapterContext;
+import com.rbkmoney.adapter.cashreg.spring.boot.starter.model.EntryStateModel;
+import com.rbkmoney.adapter.cashreg.spring.boot.starter.model.ExitStateModel;
+import com.rbkmoney.adapter.cashreg.spring.boot.starter.model.Step;
+import com.rbkmoney.adapter.cashreg.spring.boot.starter.serializer.AdapterSerializer;
+import com.rbkmoney.adapter.cashreg.spring.boot.starter.utils.creators.CashRegProviderCreators;
 import com.rbkmoney.damsel.cashreg.provider.CashRegResult;
 import com.rbkmoney.damsel.cashreg.provider.Intent;
 import com.rbkmoney.damsel.domain.Failure;
@@ -20,7 +19,8 @@ import org.springframework.stereotype.Component;
 import java.time.Instant;
 import java.util.Map;
 
-import static java.lang.Integer.parseInt;
+import static com.rbkmoney.adapter.cashreg.spring.boot.starter.utils.extractors.OptionsExtractors.extractMaxTimePolling;
+import static com.rbkmoney.adapter.cashreg.spring.boot.starter.utils.extractors.OptionsExtractors.extractPollingDelay;
 import static java.time.temporal.ChronoUnit.MINUTES;
 
 @Component
@@ -65,14 +65,6 @@ public class ExitModelToProxyResultConverter implements Converter<ExitStateModel
         }
 
         return cashRegResult;
-    }
-
-    public static Integer extractPollingDelay(Map<String, String> options, int pollingDelay) {
-        return parseInt(options.getOrDefault(OptionalField.POLLING_DELAY.getField(), String.valueOf(pollingDelay)));
-    }
-
-    public static Integer extractMaxTimePolling(Map<String, String> options, int maxTimePolling) {
-        return Integer.parseInt(options.getOrDefault(OptionalField.MAX_TIME_POLLING.getField(), String.valueOf(maxTimePolling)));
     }
 
 }

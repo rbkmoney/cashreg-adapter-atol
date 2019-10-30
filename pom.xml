@@ -42,6 +42,11 @@
     <dependencies>
         <dependency>
             <groupId>com.rbkmoney</groupId>
+            <artifactId>adapter-cashreg-spring-boot-starter</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.rbkmoney</groupId>
             <artifactId>cashreg-proto</artifactId>
             <version>1.9-9c79023</version>
         </dependency>

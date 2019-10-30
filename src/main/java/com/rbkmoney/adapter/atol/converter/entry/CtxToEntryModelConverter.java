@@ -1,11 +1,11 @@
 package com.rbkmoney.adapter.atol.converter.entry;
 
-import com.rbkmoney.adapter.atol.constant.OptionalField;
-import com.rbkmoney.adapter.atol.constant.TargetType;
-import com.rbkmoney.adapter.atol.converter.CashRegAdapterContextConveter;
-import com.rbkmoney.adapter.atol.flow.TargetTypeResolver;
-import com.rbkmoney.adapter.atol.model.*;
-import com.rbkmoney.adapter.atol.service.atol.model.*;
+
+import com.rbkmoney.adapter.cashreg.spring.boot.starter.constant.OptionalField;
+import com.rbkmoney.adapter.cashreg.spring.boot.starter.constant.TargetType;
+import com.rbkmoney.adapter.cashreg.spring.boot.starter.converter.CashRegAdapterContextConveter;
+import com.rbkmoney.adapter.cashreg.spring.boot.starter.flow.TargetTypeResolver;
+import com.rbkmoney.adapter.cashreg.spring.boot.starter.model.*;
 import com.rbkmoney.damsel.cashreg.Cart;
 import com.rbkmoney.damsel.cashreg.provider.CashRegContext;
 import com.rbkmoney.damsel.cashreg_domain.RussianLegalEntity;

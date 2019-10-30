@@ -1,12 +1,14 @@
 package com.rbkmoney.adapter.atol.processor;
 
-import com.rbkmoney.adapter.atol.model.AdapterContext;
-import com.rbkmoney.adapter.atol.model.EntryStateModel;
-import com.rbkmoney.adapter.atol.model.ExitStateModel;
-import com.rbkmoney.adapter.atol.model.Step;
+
 import com.rbkmoney.adapter.atol.service.atol.constant.Status;
 import com.rbkmoney.adapter.atol.service.atol.model.response.CommonResponse;
 import com.rbkmoney.adapter.atol.utils.ErrorUtils;
+import com.rbkmoney.adapter.cashreg.spring.boot.starter.model.AdapterContext;
+import com.rbkmoney.adapter.cashreg.spring.boot.starter.model.EntryStateModel;
+import com.rbkmoney.adapter.cashreg.spring.boot.starter.model.ExitStateModel;
+import com.rbkmoney.adapter.cashreg.spring.boot.starter.model.Step;
+import com.rbkmoney.adapter.cashreg.spring.boot.starter.processor.Processor;
 import com.rbkmoney.damsel.cashreg.CashRegInfo;
 import lombok.RequiredArgsConstructor;
 
