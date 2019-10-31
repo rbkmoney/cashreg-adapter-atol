@@ -10,6 +10,7 @@ import com.rbkmoney.adapter.atol.service.atol.model.Receipt;
 import com.rbkmoney.adapter.atol.service.atol.model.Service;
 import com.rbkmoney.adapter.atol.service.atol.model.request.CommonRequest;
 import com.rbkmoney.adapter.atol.service.atol.model.request.RequestWrapper;
+import com.rbkmoney.adapter.cashreg.spring.boot.starter.config.properties.AdapterCashRegProperties;
 import com.rbkmoney.adapter.cashreg.spring.boot.starter.constant.OptionalField;
 import com.rbkmoney.adapter.cashreg.spring.boot.starter.model.EntryStateModel;
 import com.rbkmoney.adapter.cashreg.spring.boot.starter.model.OperationModel;
@@ -27,6 +28,7 @@ public class EntryStateToCommonRequestConverter implements Converter<EntryStateM
     private final VatsTransformer vatsTransformer;
     private final PaymentsTransformer paymentsTransformer;
     private final ItemsTransformer itemsTransformer;
+    private final AdapterCashRegProperties adapterCashRegProperties;
 
     @Override
     public RequestWrapper<CommonRequest> convert(EntryStateModel entryStateModel) {
@@ -63,7 +65,7 @@ public class EntryStateToCommonRequestConverter implements Converter<EntryStateM
 
         return new RequestWrapper<>(
                 commonRequest,
-                operationModel.getOptions().get(OptionalField.URL.getField()),
+                operationModel.getOptions().getOrDefault(OptionalField.URL.getField(), adapterCashRegProperties.getUrl()),
                 operationModel.getOptions().get(OptionalField.GROUP.getField()),
                 operationModel.getOptions().get(OptionalField.COMPANY_NAME.getField()),
                 operationModel.getOptions().get(OptionalField.COMPANY_ADDRESS.getField()),

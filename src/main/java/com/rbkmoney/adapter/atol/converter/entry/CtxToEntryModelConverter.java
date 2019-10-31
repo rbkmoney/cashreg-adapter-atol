@@ -33,6 +33,7 @@ public class CtxToEntryModelConverter implements Converter<CashRegContext, Entry
 
         Map<String, String> options = context.getOptions();
         OperationModel.OperationModelBuilder builder = OperationModel.builder();
+        builder.options(context.getOptions());
         builder.cashRegId(context.getCashregId());
 
         Auth auth = Auth.builder()
@@ -59,19 +60,30 @@ public class CtxToEntryModelConverter implements Converter<CashRegContext, Entry
 
         BigDecimal totalAmount = new BigDecimal(context.getSourceCreation().getPayment().getCash().getAmount())
                 .movePointLeft(2);
+        builder.total(totalAmount);
 
         List<Payments> paymentsList = new ArrayList<>();
+        // TODO
         paymentsList.add(Payments.builder().sum(totalAmount).type(1).build());
         builder.payments(paymentsList);
 
+
+        List<Vat> vatList = new ArrayList<>();
+        // TODO
+        builder.vats(vatList);
+
         OperationModel operationModel = builder.build();
-        StateModel stateModel = StateModel.builder()
+        StateModel.StateModelBuilder stateModelBuilder = StateModel.builder()
                 .targetType(targetType)
-                .adapterContext(adapterContext)
-                .build();
+                .adapterContext(adapterContext);
+
+                if(adapterContext != null && adapterContext.getNextStep() != null) {
+                    stateModelBuilder.step(adapterContext.getNextStep());
+                }
+
         return EntryStateModel.builder()
                 .operationModel(operationModel)
-                .stateModel(stateModel)
+                .stateModel(stateModelBuilder.build())
                 .build();
     }
 

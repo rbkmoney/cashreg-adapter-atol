@@ -19,6 +19,7 @@ import com.rbkmoney.damsel.cashreg.provider.CashRegResult;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.thrift.TException;
+import org.springframework.context.annotation.Primary;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
@@ -26,6 +27,7 @@ import java.util.List;
 
 
 @Slf4j
+@Primary
 @Component
 @RequiredArgsConstructor
 public class AtolServerHandler implements CashRegProviderSrv.Iface {

@@ -27,7 +27,7 @@ public class SuccessProcessor implements Processor<ExitStateModel, EntryStateMod
             adapterContext.setReceiptId(response.getUuid());
             adapterContext.setCashRegId(entryStateModel.getOperationModel().getCashRegId());
 
-            if (Step.CHECK_STATUS.equals(exitStateModel.getNextStep())) {
+            if (Step.CHECK_STATUS.equals(entryStateModel.getStateModel().getStep())) {
                 if (Status.DONE.getValue().equalsIgnoreCase(response.getStatus())) {
                     CashRegInfo cashRegInfo = new CashRegInfo();
                     cashRegInfo.setReceiptId(response.getUuid());
@@ -38,7 +38,7 @@ public class SuccessProcessor implements Processor<ExitStateModel, EntryStateMod
                     cashRegInfo.setTimestamp(response.getTimestamp());
                     exitStateModel.setCashRegInfo(cashRegInfo);
                 }
-            } else if (Step.CREATE.equals(exitStateModel.getNextStep())) {
+            } else if (Step.CREATE.equals(entryStateModel.getStateModel().getStep())) {
                 exitStateModel.setNextStep(Step.CHECK_STATUS);
                 adapterContext.setNextStep(Step.CHECK_STATUS);
             }

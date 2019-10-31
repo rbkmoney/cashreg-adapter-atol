@@ -55,9 +55,13 @@ public class ExitModelToProxyResultConverter implements Converter<ExitStateModel
             intent = CashRegProviderCreators.createIntentWithSleepIntent(extractPollingDelay(options, timerProperties.getPollingDelay()));
         }
 
+        if (Step.CREATE.equals(adapterContext.getNextStep())) {
+            adapterContext.setNextStep(Step.CHECK_STATUS);
+        }
+
         CashRegResult cashRegResult = new CashRegResult()
                 .setIntent(intent)
-                .setState(serializer.writeByte(entryStateModel.getStateModel().getAdapterContext()));
+                .setState(serializer.writeByte(adapterContext));
 
         if (exitStateModel.getCashRegInfo() != null) {
             entryStateModel.getStateModel().setStep(Step.CHECK_STATUS);

@@ -6,7 +6,6 @@ import com.rbkmoney.adapter.atol.service.atol.constant.Operations;
 import com.rbkmoney.adapter.atol.service.atol.model.request.CommonRequest;
 import com.rbkmoney.adapter.atol.service.atol.model.request.RequestWrapper;
 import com.rbkmoney.adapter.atol.service.atol.model.response.CommonResponse;
-import com.rbkmoney.adapter.cashreg.spring.boot.starter.config.properties.AdapterCashRegProperties;
 import com.rbkmoney.adapter.cashreg.spring.boot.starter.utils.converter.ip.ConverterIp;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -24,10 +23,9 @@ public class AtolApi {
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
     private final ConverterIp converterIp;
-    private final AdapterCashRegProperties adapterCashRegProperties;
 
     public ResponseEntity<CommonResponse> getToken(RequestWrapper<CommonRequest> requestWrapper) {
-        String url = converterIp.replaceIpv4ToIpv6(extractUrl(requestWrapper, adapterCashRegProperties) + "getToken");
+        String url = converterIp.replaceIpv4ToIpv6(requestWrapper.getUrl() + "getToken");
         log.info("Atol getToken URL {}", url);
 
         CommonRequest request = new CommonRequest();
@@ -90,7 +88,7 @@ public class AtolApi {
      * Получение информации о чеке по uuid-у
      */
     public ResponseEntity<CommonResponse> report(RequestWrapper<CommonRequest> requestWrapper) {
-        String url = converterIp.replaceIpv4ToIpv6(extractUrl(requestWrapper, adapterCashRegProperties) + requestWrapper.getGroup() + "/report/" + requestWrapper.getRequest().getExternalId() + "?token=" + requestWrapper.getToken());
+        String url = converterIp.replaceIpv4ToIpv6(requestWrapper.getUrl() + requestWrapper.getGroup() + "/report/" + requestWrapper.getRequest().getExternalId() + "?token=" + requestWrapper.getToken());
         log.info("{} with url: {}", "report", url);
         ResponseEntity<CommonResponse> response = restTemplate.exchange(url, HttpMethod.GET, HttpEntity.EMPTY, CommonResponse.class);
         log.info("{} with response: {}", "report", response);
@@ -119,10 +117,6 @@ public class AtolApi {
         httpHeaders.set("Content-Type", MediaType.APPLICATION_JSON_UTF8_VALUE);
         httpHeaders.setContentType(MediaType.APPLICATION_JSON_UTF8);
         return httpHeaders;
-    }
-
-    private String extractUrl(RequestWrapper<CommonRequest> requestWrapper, AdapterCashRegProperties adapterCashRegProperties) {
-        return (requestWrapper.getUrl() == null) ? adapterCashRegProperties.getUrl() : requestWrapper.getUrl();
     }
 
 }
