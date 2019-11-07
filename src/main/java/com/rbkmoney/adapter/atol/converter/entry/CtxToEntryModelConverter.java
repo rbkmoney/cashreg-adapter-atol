@@ -8,6 +8,7 @@ import com.rbkmoney.adapter.cashreg.spring.boot.starter.converter.CashRegAdapter
 import com.rbkmoney.adapter.cashreg.spring.boot.starter.flow.TargetTypeResolver;
 import com.rbkmoney.adapter.cashreg.spring.boot.starter.model.*;
 import com.rbkmoney.damsel.cashreg.Cart;
+import com.rbkmoney.damsel.cashreg.ItemsLine;
 import com.rbkmoney.damsel.cashreg.provider.CashRegContext;
 import com.rbkmoney.damsel.cashreg_domain.PaymentInfo;
 import com.rbkmoney.damsel.cashreg_domain.RussianLegalEntity;
@@ -64,18 +65,11 @@ public class CtxToEntryModelConverter implements Converter<CashRegContext, Entry
         BigDecimal totalAmount = prepareAmount(paymentInfo.getCash().getAmount());
         builder.total(totalAmount);
 
-        List<Payments> paymentsList = paymentInfo.getCart().getLines().stream().map(itemsLine -> {
-                    BigDecimal fullPriceAmount = new BigDecimal(itemsLine.getPrice().getAmount()).multiply(new BigDecimal(itemsLine.getQuantity())).movePointLeft(2);
-                    return Payments.builder().sum(fullPriceAmount).type(PaymentType.ELECTRONIC).build();
-                }
-        ).collect(Collectors.toList());
+        List<Payments> paymentsList = paymentInfo.getCart().getLines().stream().map(this::preparePayments).collect(Collectors.toList());
         builder.payments(paymentsList);
 
 
-        List<Vat> vatList = paymentInfo.getCart().getLines().stream().map(itemsLine -> Vat.builder()
-                .sum(prepareAmount(itemsLine.getPrice().getAmount()))
-                .type(itemsLine.getTax())
-                .build()).collect(Collectors.toList());
+        List<Vat> vatList = paymentInfo.getCart().getLines().stream().map(this::prepareVat).collect(Collectors.toList());
         builder.vats(vatList);
 
         TargetType targetType = TargetTypeResolver.resolve(context.getSession().getType());
@@ -88,6 +82,18 @@ public class CtxToEntryModelConverter implements Converter<CashRegContext, Entry
 
         builder.state(stateModelBuilder.build());
         return builder.build();
+    }
+
+    private Vat prepareVat(ItemsLine itemsLine) {
+        return Vat.builder()
+                .sum(prepareAmount(itemsLine.getPrice().getAmount()))
+                .type(itemsLine.getTax())
+                .build();
+    }
+
+    private Payments preparePayments(ItemsLine itemsLine) {
+        BigDecimal fullPriceAmount = new BigDecimal(itemsLine.getPrice().getAmount()).multiply(new BigDecimal(itemsLine.getQuantity())).movePointLeft(2);
+        return Payments.builder().sum(fullPriceAmount).type(PaymentType.ELECTRONIC).build();
     }
 
     private BigDecimal prepareAmount(Long amount) {
