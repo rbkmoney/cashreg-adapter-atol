@@ -27,7 +27,7 @@ restTemplate:
   networkTimeout: 60000
 ---
 adapter-cashreg:
-    url: "https://online.atol.ru/possystem/v4/"
+  url: "https://online.atol.ru/possystem/v4/"
 ---
 timer:
   maxTimePolling: 600
