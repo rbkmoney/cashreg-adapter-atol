@@ -28,8 +28,8 @@ public class CreateRefundCreditCommonHandler extends CommonHandlerImpl<ExitState
 
     @Override
     public boolean isHandler(EntryStateModel entryStateModel) {
-        return Step.CREATE.equals(entryStateModel.getStateModel().getStep())
-                && TargetType.REFUND_CREDIT.equals(entryStateModel.getStateModel().getTargetType());
+        return Step.CREATE.equals(entryStateModel.getState().getAdapterContext().getNextStep())
+                && TargetType.REFUND_CREDIT.equals(entryStateModel.getState().getTargetType());
     }
 
 }

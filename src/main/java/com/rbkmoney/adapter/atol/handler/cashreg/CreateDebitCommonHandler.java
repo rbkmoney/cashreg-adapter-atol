@@ -28,8 +28,8 @@ public class CreateDebitCommonHandler extends CommonHandlerImpl<ExitStateModel, 
 
     @Override
     public boolean isHandler(EntryStateModel entryStateModel) {
-        return Step.CREATE.equals(entryStateModel.getStateModel().getStep())
-                && TargetType.DEBIT.equals(entryStateModel.getStateModel().getTargetType());
+        return Step.CREATE.equals(entryStateModel.getState().getAdapterContext().getNextStep())
+                && TargetType.DEBIT.equals(entryStateModel.getState().getTargetType());
     }
 
 }

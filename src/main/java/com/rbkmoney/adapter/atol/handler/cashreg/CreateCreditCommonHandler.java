@@ -28,8 +28,8 @@ public class CreateCreditCommonHandler extends CommonHandlerImpl<ExitStateModel,
 
     @Override
     public boolean isHandler(EntryStateModel entryStateModel) {
-        return Step.CREATE.equals(entryStateModel.getStateModel().getStep())
-                && TargetType.CREDIT.equals(entryStateModel.getStateModel().getTargetType());
+        return Step.CREATE.equals(entryStateModel.getState().getAdapterContext().getNextStep())
+                && TargetType.CREDIT.equals(entryStateModel.getState().getTargetType());
     }
 
 }

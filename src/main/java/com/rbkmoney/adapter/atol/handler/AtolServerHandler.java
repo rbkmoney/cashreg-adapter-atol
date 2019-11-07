@@ -10,8 +10,6 @@ import com.rbkmoney.adapter.cashreg.spring.boot.starter.flow.StepResolver;
 import com.rbkmoney.adapter.cashreg.spring.boot.starter.handler.CommonHandler;
 import com.rbkmoney.adapter.cashreg.spring.boot.starter.model.EntryStateModel;
 import com.rbkmoney.adapter.cashreg.spring.boot.starter.model.ExitStateModel;
-import com.rbkmoney.adapter.cashreg.spring.boot.starter.model.StateModel;
-import com.rbkmoney.adapter.cashreg.spring.boot.starter.model.Step;
 import com.rbkmoney.adapter.common.Validator;
 import com.rbkmoney.damsel.cashreg.provider.CashRegContext;
 import com.rbkmoney.damsel.cashreg.provider.CashRegProviderSrv;
@@ -60,7 +58,7 @@ public class AtolServerHandler implements CashRegProviderSrv.Iface {
                 .findFirst()
                 .orElseThrow(UnsupportedMethodException::new)
                 .handle(entryStateModel);
-        exitStateModel.setNextStep(stepResolver.resolveExit(exitStateModel));
+        exitStateModel.getAdapterContext().setNextStep(stepResolver.resolveExit(exitStateModel));
         return exitConverter.convert(exitStateModel);
     }
 
@@ -71,9 +69,7 @@ public class AtolServerHandler implements CashRegProviderSrv.Iface {
     ) {
         validator.validate(context);
         EntryStateModel entryStateModel = entryConverter.convert(context);
-        StateModel stateModel = entryStateModel.getStateModel();
-        Step step = stepResolver.resolveEntry(stateModel);
-        stateModel.setStep(step);
+        entryStateModel.getState().getAdapterContext().setNextStep(stepResolver.resolveEntry(entryStateModel));
         return entryStateModel;
     }
 }

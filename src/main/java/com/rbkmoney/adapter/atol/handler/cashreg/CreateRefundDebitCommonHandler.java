@@ -27,8 +27,8 @@ public class CreateRefundDebitCommonHandler extends CommonHandlerImpl<ExitStateM
 
     @Override
     public boolean isHandler(EntryStateModel entryStateModel) {
-        return Step.CREATE.equals(entryStateModel.getStateModel().getStep())
-                && TargetType.REFUND_DEBIT.equals(entryStateModel.getStateModel().getTargetType());
+        return Step.CREATE.equals(entryStateModel.getState().getAdapterContext().getNextStep())
+                && TargetType.REFUND_DEBIT.equals(entryStateModel.getState().getTargetType());
     }
 
 }

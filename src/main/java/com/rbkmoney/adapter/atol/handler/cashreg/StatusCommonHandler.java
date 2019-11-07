@@ -26,7 +26,7 @@ public class StatusCommonHandler extends CommonHandlerImpl<ExitStateModel, Reque
 
     @Override
     public boolean isHandler(EntryStateModel entryStateModel) {
-        return Step.CHECK_STATUS.equals(entryStateModel.getStateModel().getStep());
+        return Step.CHECK_STATUS.equals(entryStateModel.getState().getAdapterContext().getNextStep());
     }
 
 }

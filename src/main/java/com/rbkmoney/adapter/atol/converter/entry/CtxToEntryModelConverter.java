@@ -1,9 +1,10 @@
 package com.rbkmoney.adapter.atol.converter.entry;
 
 
+import com.rbkmoney.adapter.atol.service.atol.constant.PaymentType;
 import com.rbkmoney.adapter.cashreg.spring.boot.starter.constant.OptionalField;
 import com.rbkmoney.adapter.cashreg.spring.boot.starter.constant.TargetType;
-import com.rbkmoney.adapter.cashreg.spring.boot.starter.converter.CashRegAdapterContextConveter;
+import com.rbkmoney.adapter.cashreg.spring.boot.starter.converter.CashRegAdapterContextConverter;
 import com.rbkmoney.adapter.cashreg.spring.boot.starter.flow.TargetTypeResolver;
 import com.rbkmoney.adapter.cashreg.spring.boot.starter.model.*;
 import com.rbkmoney.damsel.cashreg.Cart;
@@ -18,21 +19,21 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
 public class CtxToEntryModelConverter implements Converter<CashRegContext, EntryStateModel> {
 
-    private final TargetTypeResolver resolveTargetType;
-    private final CashRegAdapterContextConveter cashRegAdapterContextConveter;
+    private final CashRegAdapterContextConverter cashRegAdapterContextConveter;
 
     @Override
     public EntryStateModel convert(CashRegContext context) {
-        AdapterContext adapterContext = cashRegAdapterContextConveter.convert(context);
-        TargetType targetType = resolveTargetType.resolve(context.getSession().getType());
+        AdapterState adapterState = cashRegAdapterContextConveter.convert(context);
 
         Map<String, String> options = context.getOptions();
-        OperationModel.OperationModelBuilder builder = OperationModel.builder();
+        EntryStateModel.EntryStateModelBuilder builder = EntryStateModel.builder();
+
         builder.options(context.getOptions());
         builder.cashRegId(context.getCashregId());
 
@@ -63,28 +64,33 @@ public class CtxToEntryModelConverter implements Converter<CashRegContext, Entry
         builder.total(totalAmount);
 
         List<Payments> paymentsList = new ArrayList<>();
-        // TODO
-        paymentsList.add(Payments.builder().sum(totalAmount).type(1).build());
+
+        context.getSourceCreation().getPayment().getCart().getLines().stream().forEach(itemsLine -> {
+                    BigDecimal fullPriceAmount = new BigDecimal(itemsLine.getPrice().getAmount()).multiply(new BigDecimal(itemsLine.getQuantity()));
+                    Payments payments = Payments.builder().sum(fullPriceAmount).type(PaymentType.ELECTRONIC).build();
+                    paymentsList.add(payments);
+                }
+        );
+        
         builder.payments(paymentsList);
 
 
-        List<Vat> vatList = new ArrayList<>();
-        // TODO
+        List<Vat> vatList = context.getSourceCreation().getPayment().getCart().getLines().stream().map(itemsLine -> Vat.builder()
+                .sum(new BigDecimal(itemsLine.getPrice().getAmount()).movePointLeft(2))
+                .type(itemsLine.getTax())
+                .build()).collect(Collectors.toList());
         builder.vats(vatList);
 
-        OperationModel operationModel = builder.build();
+        TargetType targetType = TargetTypeResolver.resolve(context.getSession().getType());
         StateModel.StateModelBuilder stateModelBuilder = StateModel.builder()
-                .targetType(targetType)
-                .adapterContext(adapterContext);
+                .targetType(targetType);
 
-                if(adapterContext != null && adapterContext.getNextStep() != null) {
-                    stateModelBuilder.step(adapterContext.getNextStep());
-                }
+        if (adapterState != null) {
+            stateModelBuilder.adapterContext(adapterState);
+        }
 
-        return EntryStateModel.builder()
-                .operationModel(operationModel)
-                .stateModel(stateModelBuilder.build())
-                .build();
+        builder.state(stateModelBuilder.build());
+        return builder.build();
     }
 
     private List<Items> prepareCart(Cart cart, Map<String, String> options) {
@@ -98,7 +104,7 @@ public class CtxToEntryModelConverter implements Converter<CashRegContext, Entry
             itemsList.add(
                     Items.builder()
                             .quantity(new BigDecimal(itemsLine.getQuantity()).setScale(1))
-                            .price(new BigDecimal(itemsLine.getPrice().getAmount()).divide(new BigDecimal(100)).setScale(2))
+                            .price(new BigDecimal(itemsLine.getPrice().getAmount()).movePointLeft(2))
                             .sum(sum)
                             .vat(Vat.builder().type(itemsLine.getTax()).build())
                             .paymentMethod(options.get(OptionalField.PAYMENT_METHOD.getField()))

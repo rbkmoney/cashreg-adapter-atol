@@ -4,7 +4,7 @@ package com.rbkmoney.adapter.atol.processor;
 import com.rbkmoney.adapter.atol.service.atol.constant.Status;
 import com.rbkmoney.adapter.atol.service.atol.model.response.CommonResponse;
 import com.rbkmoney.adapter.atol.utils.ErrorUtils;
-import com.rbkmoney.adapter.cashreg.spring.boot.starter.model.AdapterContext;
+import com.rbkmoney.adapter.cashreg.spring.boot.starter.model.AdapterState;
 import com.rbkmoney.adapter.cashreg.spring.boot.starter.model.EntryStateModel;
 import com.rbkmoney.adapter.cashreg.spring.boot.starter.model.ExitStateModel;
 import com.rbkmoney.adapter.cashreg.spring.boot.starter.model.Step;
@@ -23,11 +23,11 @@ public class SuccessProcessor implements Processor<ExitStateModel, EntryStateMod
             ExitStateModel exitStateModel = new ExitStateModel();
             exitStateModel.setEntryStateModel(entryStateModel);
 
-            AdapterContext adapterContext = entryStateModel.getStateModel().getAdapterContext();
-            adapterContext.setReceiptId(response.getUuid());
-            adapterContext.setCashRegId(entryStateModel.getOperationModel().getCashRegId());
+            AdapterState adapterState = entryStateModel.getState().getAdapterContext();
+            adapterState.setReceiptId(response.getUuid());
+            adapterState.setCashRegId(entryStateModel.getCashRegId());
 
-            if (Step.CHECK_STATUS.equals(entryStateModel.getStateModel().getStep())) {
+            if (Step.CHECK_STATUS.equals(entryStateModel.getState().getAdapterContext().getNextStep())) {
                 if (Status.DONE.getValue().equalsIgnoreCase(response.getStatus())) {
                     CashRegInfo cashRegInfo = new CashRegInfo();
                     cashRegInfo.setReceiptId(response.getUuid());
@@ -38,11 +38,10 @@ public class SuccessProcessor implements Processor<ExitStateModel, EntryStateMod
                     cashRegInfo.setTimestamp(response.getTimestamp());
                     exitStateModel.setCashRegInfo(cashRegInfo);
                 }
-            } else if (Step.CREATE.equals(entryStateModel.getStateModel().getStep())) {
-                exitStateModel.setNextStep(Step.CHECK_STATUS);
-                adapterContext.setNextStep(Step.CHECK_STATUS);
+            } else if (Step.CREATE.equals(entryStateModel.getState().getAdapterContext().getNextStep())) {
+                adapterState.setNextStep(Step.CHECK_STATUS);
             }
-            exitStateModel.setAdapterContext(adapterContext);
+            exitStateModel.setAdapterContext(adapterState);
             return exitStateModel;
         }
 
