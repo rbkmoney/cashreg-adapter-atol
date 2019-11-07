@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
 public class ObjectMapperConfiguration {
 
     @Bean
-    ObjectMapper objectMapper() {
+    public ObjectMapper objectMapper() {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_CONTROL_CHARS, true);
         objectMapper.registerModule(new JavaTimeModule());

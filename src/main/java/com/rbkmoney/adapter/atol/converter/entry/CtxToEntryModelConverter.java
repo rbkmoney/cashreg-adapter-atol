@@ -59,24 +59,19 @@ public class CtxToEntryModelConverter implements Converter<CashRegContext, Entry
 
         builder.items(prepareCart(context.getSourceCreation().getPayment().getCart(), options));
 
-        BigDecimal totalAmount = new BigDecimal(context.getSourceCreation().getPayment().getCash().getAmount())
-                .movePointLeft(2);
+        BigDecimal totalAmount = prepareAmount(context.getSourceCreation().getPayment().getCash().getAmount());
         builder.total(totalAmount);
 
-        List<Payments> paymentsList = new ArrayList<>();
-
-        context.getSourceCreation().getPayment().getCart().getLines().stream().forEach(itemsLine -> {
-                    BigDecimal fullPriceAmount = new BigDecimal(itemsLine.getPrice().getAmount()).multiply(new BigDecimal(itemsLine.getQuantity()));
-                    Payments payments = Payments.builder().sum(fullPriceAmount).type(PaymentType.ELECTRONIC).build();
-                    paymentsList.add(payments);
+        List<Payments> paymentsList = context.getSourceCreation().getPayment().getCart().getLines().stream().map(itemsLine -> {
+                    BigDecimal fullPriceAmount = new BigDecimal(itemsLine.getPrice().getAmount()).multiply(new BigDecimal(itemsLine.getQuantity())).movePointLeft(2);
+                    return Payments.builder().sum(fullPriceAmount).type(PaymentType.ELECTRONIC).build();
                 }
-        );
-        
+        ).collect(Collectors.toList());
         builder.payments(paymentsList);
 
 
         List<Vat> vatList = context.getSourceCreation().getPayment().getCart().getLines().stream().map(itemsLine -> Vat.builder()
-                .sum(new BigDecimal(itemsLine.getPrice().getAmount()).movePointLeft(2))
+                .sum(prepareAmount(itemsLine.getPrice().getAmount()))
                 .type(itemsLine.getTax())
                 .build()).collect(Collectors.toList());
         builder.vats(vatList);
@@ -93,6 +88,10 @@ public class CtxToEntryModelConverter implements Converter<CashRegContext, Entry
         return builder.build();
     }
 
+    private BigDecimal prepareAmount(Long amount) {
+        return new BigDecimal(amount).movePointLeft(2);
+    }
+
     private List<Items> prepareCart(Cart cart, Map<String, String> options) {
         List<Items> itemsList = new ArrayList<>();
         cart.getLines().forEach(itemsLine -> {
@@ -104,7 +103,7 @@ public class CtxToEntryModelConverter implements Converter<CashRegContext, Entry
             itemsList.add(
                     Items.builder()
                             .quantity(new BigDecimal(itemsLine.getQuantity()).setScale(1))
-                            .price(new BigDecimal(itemsLine.getPrice().getAmount()).movePointLeft(2))
+                            .price(prepareAmount(itemsLine.getPrice().getAmount()))
                             .sum(sum)
                             .vat(Vat.builder().type(itemsLine.getTax()).build())
                             .paymentMethod(options.get(OptionalField.PAYMENT_METHOD.getField()))

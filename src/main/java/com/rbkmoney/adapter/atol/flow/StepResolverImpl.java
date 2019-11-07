@@ -14,7 +14,7 @@ public class StepResolverImpl implements StepResolver<EntryStateModel, ExitState
 
     @Override
     public Step resolveEntry(EntryStateModel stateModel) {
-        return (stateModel.getState().getAdapterContext() != null && stateModel.getState().getAdapterContext().getNextStep() == null)
+        return (stateModel.getState().getAdapterContext().getNextStep() == null)
                 ? Step.CREATE : Step.CHECK_STATUS;
     }
 

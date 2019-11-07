@@ -17,6 +17,7 @@ import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.context.annotation.RequestScope;
 
 import javax.net.ssl.SSLContext;
 import java.security.KeyManagementException;
@@ -63,7 +64,7 @@ public class RestTemplateConfiguration {
 
     @Bean
     // TODO: 14/11/2018 fix integrations test: change {@Autowired ServerHandler serverHandler} to thriftClient
-    //@RequestScope
+    @RequestScope
     public RestTemplate restTemplate(RestTemplateBuilder restTemplateBuilder,
                                      @Value("${restTemplate.networkTimeout}") int networkTimeout) {
         int executionTimeout = ContextUtils.getExecutionTimeout(TraceContext.getCurrentTraceData().getServiceSpan(), networkTimeout);
