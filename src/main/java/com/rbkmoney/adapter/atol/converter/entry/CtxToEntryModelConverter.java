@@ -39,38 +39,32 @@ public class CtxToEntryModelConverter implements Converter<CashRegContext, Entry
         builder.options(context.getOptions());
         builder.cashRegId(context.getCashregId());
 
-        Auth auth = Auth.builder()
+        builder.auth(Auth.builder()
                 .login(options.get(OptionalField.LOGIN.getField()))
                 .pass(options.get(OptionalField.PASS.getField()))
-                .build();
-        builder.auth(auth);
+                .build());
 
         PaymentInfo paymentInfo = context.getSourceCreation().getPayment();
-        Client client = Client.builder()
+        builder.client(Client.builder()
                 .email(paymentInfo.getEmail())
-                .build();
-        builder.client(client);
+                .build()
+        );
 
         RussianLegalEntity russianLegalEntity = context.getAccountInfo().getLegalEntity().getRussianLegalEntity();
-        Company company = Company.builder()
+        builder.company(Company.builder()
                 .email(russianLegalEntity.getEmail())
                 .inn(russianLegalEntity.getInn())
                 .paymentAddress(russianLegalEntity.getActualAddress())
                 .sno(TaxMode.findByValue(russianLegalEntity.getTaxMode().getValue()).name())
-                .build();
-        builder.company(company);
+                .build()
+        );
 
         builder.items(prepareCart(paymentInfo.getCart(), options));
+        builder.total(prepareAmount(paymentInfo.getCash().getAmount()));
 
-        BigDecimal totalAmount = prepareAmount(paymentInfo.getCash().getAmount());
-        builder.total(totalAmount);
-
-        List<Payments> paymentsList = paymentInfo.getCart().getLines().stream().map(this::preparePayments).collect(Collectors.toList());
-        builder.payments(paymentsList);
-
-
-        List<Vat> vatList = paymentInfo.getCart().getLines().stream().map(this::prepareVat).collect(Collectors.toList());
-        builder.vats(vatList);
+        List<ItemsLine> itemsLines = paymentInfo.getCart().getLines();
+        builder.payments(itemsLines.stream().map(this::preparePayments).collect(Collectors.toList()));
+        builder.vats(itemsLines.stream().map(this::prepareVat).collect(Collectors.toList()));
 
         TargetType targetType = TargetTypeResolver.resolve(context.getSession().getType());
         StateModel.StateModelBuilder stateModelBuilder = StateModel.builder()
