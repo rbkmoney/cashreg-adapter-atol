@@ -92,7 +92,7 @@ public class CtxToEntryModelConverter implements Converter<CashRegContext, Entry
     }
 
     private Payments preparePayments(ItemsLine itemsLine) {
-        BigDecimal fullPriceAmount = new BigDecimal(itemsLine.getPrice().getAmount()).multiply(new BigDecimal(itemsLine.getQuantity())).movePointLeft(2);
+        BigDecimal fullPriceAmount = prepareAmount(itemsLine.getPrice().getAmount() * itemsLine.getQuantity());
         return Payments.builder().sum(fullPriceAmount).type(PaymentType.ELECTRONIC).build();
     }
 
