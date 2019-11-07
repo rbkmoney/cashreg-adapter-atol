@@ -103,11 +103,7 @@ public class CtxToEntryModelConverter implements Converter<CashRegContext, Entry
     private List<Items> prepareCart(Cart cart, Map<String, String> options) {
         List<Items> itemsList = new ArrayList<>();
         cart.getLines().forEach(itemsLine -> {
-
-            BigDecimal sum = new BigDecimal(itemsLine.getPrice().getAmount())
-                    .multiply(new BigDecimal(itemsLine.getQuantity()))
-                    .movePointLeft(2);
-
+            BigDecimal sum = prepareAmount(itemsLine.getPrice().getAmount() * itemsLine.getQuantity());
             itemsList.add(
                     Items.builder()
                             .quantity(new BigDecimal(itemsLine.getQuantity()).setScale(1))
