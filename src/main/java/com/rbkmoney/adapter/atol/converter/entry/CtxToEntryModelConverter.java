@@ -9,6 +9,7 @@ import com.rbkmoney.adapter.cashreg.spring.boot.starter.flow.TargetTypeResolver;
 import com.rbkmoney.adapter.cashreg.spring.boot.starter.model.*;
 import com.rbkmoney.damsel.cashreg.Cart;
 import com.rbkmoney.damsel.cashreg.provider.CashRegContext;
+import com.rbkmoney.damsel.cashreg_domain.PaymentInfo;
 import com.rbkmoney.damsel.cashreg_domain.RussianLegalEntity;
 import com.rbkmoney.damsel.cashreg_domain.TaxMode;
 import lombok.RequiredArgsConstructor;
@@ -43,8 +44,9 @@ public class CtxToEntryModelConverter implements Converter<CashRegContext, Entry
                 .build();
         builder.auth(auth);
 
+        PaymentInfo paymentInfo = context.getSourceCreation().getPayment();
         Client client = Client.builder()
-                .email(context.getSourceCreation().getPayment().getEmail())
+                .email(paymentInfo.getEmail())
                 .build();
         builder.client(client);
 
@@ -57,12 +59,12 @@ public class CtxToEntryModelConverter implements Converter<CashRegContext, Entry
                 .build();
         builder.company(company);
 
-        builder.items(prepareCart(context.getSourceCreation().getPayment().getCart(), options));
+        builder.items(prepareCart(paymentInfo.getCart(), options));
 
-        BigDecimal totalAmount = prepareAmount(context.getSourceCreation().getPayment().getCash().getAmount());
+        BigDecimal totalAmount = prepareAmount(paymentInfo.getCash().getAmount());
         builder.total(totalAmount);
 
-        List<Payments> paymentsList = context.getSourceCreation().getPayment().getCart().getLines().stream().map(itemsLine -> {
+        List<Payments> paymentsList = paymentInfo.getCart().getLines().stream().map(itemsLine -> {
                     BigDecimal fullPriceAmount = new BigDecimal(itemsLine.getPrice().getAmount()).multiply(new BigDecimal(itemsLine.getQuantity())).movePointLeft(2);
                     return Payments.builder().sum(fullPriceAmount).type(PaymentType.ELECTRONIC).build();
                 }
@@ -70,7 +72,7 @@ public class CtxToEntryModelConverter implements Converter<CashRegContext, Entry
         builder.payments(paymentsList);
 
 
-        List<Vat> vatList = context.getSourceCreation().getPayment().getCart().getLines().stream().map(itemsLine -> Vat.builder()
+        List<Vat> vatList = paymentInfo.getCart().getLines().stream().map(itemsLine -> Vat.builder()
                 .sum(prepareAmount(itemsLine.getPrice().getAmount()))
                 .type(itemsLine.getTax())
                 .build()).collect(Collectors.toList());
