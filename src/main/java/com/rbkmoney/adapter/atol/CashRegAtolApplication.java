@@ -2,9 +2,11 @@ package com.rbkmoney.adapter.atol;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.web.servlet.ServletComponentScan;
 
-@SpringBootApplication(scanBasePackages = {"com.rbkmoney.adapter.atol"})
-public class CashRegAtolApplication {
+@ServletComponentScan
+@SpringBootApplication
+public class CashRegAtolApplication extends SpringApplication {
     public static void main(String[] args) {
         SpringApplication.run(CashRegAtolApplication.class, args);
     }

@@ -26,10 +26,13 @@ converterIp:
 restTemplate:
   networkTimeout: 60000
 ---
-atol:
+adapter-cashreg:
   url: "https://online.atol.ru/possystem/v4/"
 ---
 timer:
   maxTimePolling: 600
   pollingDelay: 600
-
+---
+error-mapping:
+  file: classpath:fixture/errors.json
+  patternReason: "'%s' - '%s'" # 'code' - 'description'

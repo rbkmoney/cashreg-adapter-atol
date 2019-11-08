@@ -3,22 +3,21 @@ package com.rbkmoney.adapter.atol.handler;
 
 import com.rbkmoney.adapter.atol.converter.entry.CtxToEntryModelConverter;
 import com.rbkmoney.adapter.atol.converter.exit.ExitModelToProxyResultConverter;
-import com.rbkmoney.adapter.atol.exception.UnsupportedMethodException;
-import com.rbkmoney.adapter.atol.flow.StepResolver;
-import com.rbkmoney.adapter.atol.handler.cashreg.CommonHandler;
-import com.rbkmoney.adapter.atol.model.EntryStateModel;
-import com.rbkmoney.adapter.atol.model.ExitStateModel;
-import com.rbkmoney.adapter.atol.model.StateModel;
-import com.rbkmoney.adapter.atol.model.Step;
 import com.rbkmoney.adapter.atol.service.atol.model.response.CommonResponse;
 import com.rbkmoney.adapter.atol.validator.CashRegContextValidator;
-import com.rbkmoney.adapter.atol.validator.Validator;
+import com.rbkmoney.adapter.cashreg.spring.boot.starter.exception.UnsupportedMethodException;
+import com.rbkmoney.adapter.cashreg.spring.boot.starter.flow.StepResolver;
+import com.rbkmoney.adapter.cashreg.spring.boot.starter.handler.CommonHandler;
+import com.rbkmoney.adapter.cashreg.spring.boot.starter.model.EntryStateModel;
+import com.rbkmoney.adapter.cashreg.spring.boot.starter.model.ExitStateModel;
+import com.rbkmoney.adapter.common.Validator;
 import com.rbkmoney.damsel.cashreg.provider.CashRegContext;
 import com.rbkmoney.damsel.cashreg.provider.CashRegProviderSrv;
 import com.rbkmoney.damsel.cashreg.provider.CashRegResult;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.thrift.TException;
+import org.springframework.context.annotation.Primary;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
@@ -26,6 +25,7 @@ import java.util.List;
 
 
 @Slf4j
+@Primary
 @Component
 @RequiredArgsConstructor
 public class AtolServerHandler implements CashRegProviderSrv.Iface {
@@ -38,7 +38,12 @@ public class AtolServerHandler implements CashRegProviderSrv.Iface {
 
     @Override
     public CashRegResult register(CashRegContext context) throws TException {
-        return handle(cashRegContextValidator, ctxToEntryModelConverter, exitModelToProxyResultConverter, context);
+        return handle(
+                cashRegContextValidator,
+                ctxToEntryModelConverter,
+                exitModelToProxyResultConverter,
+                context
+        );
     }
 
     private <T, R> R handle(
@@ -53,16 +58,18 @@ public class AtolServerHandler implements CashRegProviderSrv.Iface {
                 .findFirst()
                 .orElseThrow(UnsupportedMethodException::new)
                 .handle(entryStateModel);
-        exitStateModel.setNextStep(stepResolver.resolveExit(exitStateModel));
+        exitStateModel.getAdapterContext().setNextStep(stepResolver.resolveExit(exitStateModel));
         return exitConverter.convert(exitStateModel);
     }
 
-    private <T> EntryStateModel prepareEntryState(Validator<T> validator, Converter<T, EntryStateModel> entryConverter, T context) {
+    private <T> EntryStateModel prepareEntryState(
+            Validator<T> validator,
+            Converter<T, EntryStateModel> entryConverter,
+            T context
+    ) {
         validator.validate(context);
         EntryStateModel entryStateModel = entryConverter.convert(context);
-        StateModel stateModel = entryStateModel.getStateModel();
-        Step step = stepResolver.resolveEntry(stateModel);
-        stateModel.setStep(step);
+        entryStateModel.getState().getAdapterContext().setNextStep(stepResolver.resolveEntry(entryStateModel));
         return entryStateModel;
     }
 }

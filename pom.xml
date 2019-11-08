@@ -37,9 +37,15 @@
         <testcontainers.version>1.10.2</testcontainers.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <adapter-bank-spring-boot-starter-test.version>0.0.1-SNAPSHOT</adapter-bank-spring-boot-starter-test.version>
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>com.rbkmoney</groupId>
+            <artifactId>adapter-cashreg-spring-boot-starter</artifactId>
+            <version>1.0.0</version>
+        </dependency>
         <dependency>
             <groupId>com.rbkmoney</groupId>
             <artifactId>cashreg-proto</artifactId>
@@ -109,6 +115,12 @@
             <groupId>com.rbkmoney</groupId>
             <artifactId>adapter-common-lib</artifactId>
             <version>${adapter-common-lib.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.rbkmoney</groupId>
+            <artifactId>adapter-bank-spring-boot-starter-test</artifactId>
+            <version>${adapter-bank-spring-boot-starter-test.version}</version>
+            <scope>test</scope>
         </dependency>
         <!--Test libs-->
         <dependency>

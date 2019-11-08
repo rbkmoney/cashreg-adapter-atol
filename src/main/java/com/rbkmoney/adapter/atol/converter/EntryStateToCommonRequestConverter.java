@@ -1,14 +1,18 @@
 package com.rbkmoney.adapter.atol.converter;
 
-import com.rbkmoney.adapter.atol.constant.OptionalField;
-import com.rbkmoney.adapter.atol.model.EntryStateModel;
-import com.rbkmoney.adapter.atol.model.OperationModel;
+
+import com.rbkmoney.adapter.atol.converter.transformer.ItemsTransformer;
+import com.rbkmoney.adapter.atol.converter.transformer.PaymentsTransformer;
+import com.rbkmoney.adapter.atol.converter.transformer.VatsTransformer;
 import com.rbkmoney.adapter.atol.service.atol.model.Client;
 import com.rbkmoney.adapter.atol.service.atol.model.Company;
 import com.rbkmoney.adapter.atol.service.atol.model.Receipt;
 import com.rbkmoney.adapter.atol.service.atol.model.Service;
 import com.rbkmoney.adapter.atol.service.atol.model.request.CommonRequest;
 import com.rbkmoney.adapter.atol.service.atol.model.request.RequestWrapper;
+import com.rbkmoney.adapter.cashreg.spring.boot.starter.config.properties.AdapterCashRegProperties;
+import com.rbkmoney.adapter.cashreg.spring.boot.starter.constant.OptionalField;
+import com.rbkmoney.adapter.cashreg.spring.boot.starter.model.EntryStateModel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
@@ -18,51 +22,55 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class EntryStateToCommonRequestConverter implements Converter<EntryStateModel, RequestWrapper<CommonRequest>> {
 
-    private final static String DEFAULT_EMPTY_VALUE_TOKEN_API = "";
+    private static final String DEFAULT_EMPTY_VALUE_TOKEN_API = "";
+
+    private final VatsTransformer vatsTransformer;
+    private final PaymentsTransformer paymentsTransformer;
+    private final ItemsTransformer itemsTransformer;
+    private final AdapterCashRegProperties adapterCashRegProperties;
 
     @Override
     public RequestWrapper<CommonRequest> convert(EntryStateModel entryStateModel) {
-        OperationModel operationModel = entryStateModel.getOperationModel();
-        CommonRequest commonRequest = new CommonRequest();
-        commonRequest.setLogin(operationModel.getAuth().getLogin());
-        commonRequest.setPass(operationModel.getAuth().getPass());
 
-        commonRequest.setExternalId(operationModel.getCashRegId());
+        CommonRequest commonRequest = new CommonRequest();
+        commonRequest.setLogin(entryStateModel.getAuth().getLogin());
+        commonRequest.setPass(entryStateModel.getAuth().getPass());
+
+        commonRequest.setExternalId(entryStateModel.getCashRegId());
 
         commonRequest.setReceipt(
                 Receipt.builder()
                         .client(
                                 Client.builder()
-                                        .email(operationModel.getClient().getEmail())
+                                        .email(entryStateModel.getClient().getEmail())
                                         .build()
                         )
                         .company(
                                 Company.builder()
-                                        .inn(operationModel.getCompany().getInn())
-                                        .email(operationModel.getCompany().getEmail())
-                                        .paymentAddress(operationModel.getCompany().getPaymentAddress())
-                                        .sno(operationModel.getCompany().getSno())
+                                        .inn(entryStateModel.getCompany().getInn())
+                                        .email(entryStateModel.getCompany().getEmail())
+                                        .paymentAddress(entryStateModel.getCompany().getPaymentAddress())
+                                        .sno(entryStateModel.getCompany().getSno())
                                         .build()
                         )
-                        .payments(operationModel.getPayments())
-                        .items(operationModel.getItems())
-                        .total(operationModel.getTotal())
-                        .vats(operationModel.getVats())
+                        .payments(paymentsTransformer.transform(entryStateModel.getPayments())) //
+                        .items(itemsTransformer.transform(entryStateModel.getItems()))
+                        .total(entryStateModel.getTotal()) //
+                        .vats(vatsTransformer.transform(entryStateModel.getVats())) //
                         .build());
 
-        Service service = Service.builder().callbackUrl(operationModel.getCallbackUrl()).build();
+        Service service = Service.builder().callbackUrl(entryStateModel.getCallbackUrl()).build();
         commonRequest.setService(service);
 
         return new RequestWrapper<>(
                 commonRequest,
-                operationModel.getOptions().get(OptionalField.URL.getField()),
-                operationModel.getOptions().get(OptionalField.GROUP.getField()),
-                operationModel.getOptions().get(OptionalField.COMPANY.getField()),
-                operationModel.getOptions().get(OptionalField.COMPANY_ADDRESS.getField()),
+                entryStateModel.getOptions().getOrDefault(OptionalField.URL.getField(), adapterCashRegProperties.getUrl()),
+                entryStateModel.getOptions().get(OptionalField.GROUP.getField()),
+                entryStateModel.getOptions().get(OptionalField.COMPANY_NAME.getField()),
+                entryStateModel.getOptions().get(OptionalField.COMPANY_ADDRESS.getField()),
                 DEFAULT_EMPTY_VALUE_TOKEN_API
         );
     }
-
 
 }
 

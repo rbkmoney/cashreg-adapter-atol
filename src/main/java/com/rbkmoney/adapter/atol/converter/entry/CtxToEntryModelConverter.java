@@ -1,13 +1,16 @@
 package com.rbkmoney.adapter.atol.converter.entry;
 
-import com.rbkmoney.adapter.atol.constant.OptionalField;
-import com.rbkmoney.adapter.atol.constant.TargetType;
-import com.rbkmoney.adapter.atol.converter.CashRegAdapterContextConveter;
-import com.rbkmoney.adapter.atol.flow.TargetTypeResolver;
-import com.rbkmoney.adapter.atol.model.*;
-import com.rbkmoney.adapter.atol.service.atol.model.*;
+
+import com.rbkmoney.adapter.atol.service.atol.constant.PaymentType;
+import com.rbkmoney.adapter.cashreg.spring.boot.starter.constant.OptionalField;
+import com.rbkmoney.adapter.cashreg.spring.boot.starter.constant.TargetType;
+import com.rbkmoney.adapter.cashreg.spring.boot.starter.converter.CashRegAdapterContextConverter;
+import com.rbkmoney.adapter.cashreg.spring.boot.starter.flow.TargetTypeResolver;
+import com.rbkmoney.adapter.cashreg.spring.boot.starter.model.*;
 import com.rbkmoney.damsel.cashreg.Cart;
+import com.rbkmoney.damsel.cashreg.ItemsLine;
 import com.rbkmoney.damsel.cashreg.provider.CashRegContext;
+import com.rbkmoney.damsel.cashreg_domain.PaymentInfo;
 import com.rbkmoney.damsel.cashreg_domain.RussianLegalEntity;
 import com.rbkmoney.damsel.cashreg_domain.TaxMode;
 import lombok.RequiredArgsConstructor;
@@ -18,75 +21,87 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
 public class CtxToEntryModelConverter implements Converter<CashRegContext, EntryStateModel> {
 
-    private final TargetTypeResolver resolveTargetType;
-    private final CashRegAdapterContextConveter cashRegAdapterContextConveter;
+    private final CashRegAdapterContextConverter cashRegAdapterContextConveter;
 
     @Override
     public EntryStateModel convert(CashRegContext context) {
-        AdapterContext adapterContext = cashRegAdapterContextConveter.convert(context);
-        TargetType targetType = resolveTargetType.resolve(context.getSession().getType());
+        AdapterState adapterState = cashRegAdapterContextConveter.convert(context);
 
         Map<String, String> options = context.getOptions();
-        OperationModel.OperationModelBuilder builder = OperationModel.builder();
+        EntryStateModel.EntryStateModelBuilder builder = EntryStateModel.builder();
+
+        builder.options(context.getOptions());
         builder.cashRegId(context.getCashregId());
 
-        Auth auth = Auth.builder()
+        builder.auth(Auth.builder()
                 .login(options.get(OptionalField.LOGIN.getField()))
                 .pass(options.get(OptionalField.PASS.getField()))
-                .build();
-        builder.auth(auth);
+                .build());
 
-        Client client = Client.builder()
-                .email(context.getSourceCreation().getPayment().getEmail())
-                .build();
-        builder.client(client);
+        PaymentInfo paymentInfo = context.getSourceCreation().getPayment();
+        builder.client(Client.builder()
+                .email(paymentInfo.getEmail())
+                .build()
+        );
 
         RussianLegalEntity russianLegalEntity = context.getAccountInfo().getLegalEntity().getRussianLegalEntity();
-        Company company = Company.builder()
+        builder.company(Company.builder()
                 .email(russianLegalEntity.getEmail())
                 .inn(russianLegalEntity.getInn())
                 .paymentAddress(russianLegalEntity.getActualAddress())
                 .sno(TaxMode.findByValue(russianLegalEntity.getTaxMode().getValue()).name())
+                .build()
+        );
+
+        builder.items(prepareCart(paymentInfo.getCart(), options));
+        builder.total(prepareAmount(paymentInfo.getCash().getAmount()));
+
+        List<ItemsLine> itemsLines = paymentInfo.getCart().getLines();
+        builder.payments(itemsLines.stream().map(this::preparePayments).collect(Collectors.toList()));
+        builder.vats(itemsLines.stream().map(this::prepareVat).collect(Collectors.toList()));
+
+        TargetType targetType = TargetTypeResolver.resolve(context.getSession().getType());
+        StateModel.StateModelBuilder stateModelBuilder = StateModel.builder()
+                .targetType(targetType);
+
+        if (adapterState != null) {
+            stateModelBuilder.adapterContext(adapterState);
+        }
+
+        builder.state(stateModelBuilder.build());
+        return builder.build();
+    }
+
+    private Vat prepareVat(ItemsLine itemsLine) {
+        return Vat.builder()
+                .sum(prepareAmount(itemsLine.getPrice().getAmount()))
+                .type(itemsLine.getTax())
                 .build();
-        builder.company(company);
+    }
 
-        builder.items(prepareCart(context.getSourceCreation().getPayment().getCart(), options));
+    private Payments preparePayments(ItemsLine itemsLine) {
+        BigDecimal fullPriceAmount = prepareAmount(itemsLine.getPrice().getAmount() * itemsLine.getQuantity());
+        return Payments.builder().sum(fullPriceAmount).type(PaymentType.ELECTRONIC).build();
+    }
 
-        BigDecimal totalAmount = new BigDecimal(context.getSourceCreation().getPayment().getCash().getAmount())
-                .movePointLeft(2);
-
-        List<Payments> paymentsList = new ArrayList<>();
-        paymentsList.add(Payments.builder().sum(totalAmount).type(1).build());
-        builder.payments(paymentsList);
-
-        OperationModel operationModel = builder.build();
-        StateModel stateModel = StateModel.builder()
-                .targetType(targetType)
-                .adapterContext(adapterContext)
-                .build();
-        return EntryStateModel.builder()
-                .operationModel(operationModel)
-                .stateModel(stateModel)
-                .build();
+    private BigDecimal prepareAmount(Long amount) {
+        return new BigDecimal(amount).movePointLeft(2);
     }
 
     private List<Items> prepareCart(Cart cart, Map<String, String> options) {
         List<Items> itemsList = new ArrayList<>();
         cart.getLines().forEach(itemsLine -> {
-
-            BigDecimal sum = new BigDecimal(itemsLine.getPrice().getAmount())
-                    .multiply(new BigDecimal(itemsLine.getQuantity()))
-                    .movePointLeft(2);
-
+            BigDecimal sum = prepareAmount(itemsLine.getPrice().getAmount() * itemsLine.getQuantity());
             itemsList.add(
                     Items.builder()
                             .quantity(new BigDecimal(itemsLine.getQuantity()).setScale(1))
-                            .price(new BigDecimal(itemsLine.getPrice().getAmount()).divide(new BigDecimal(100)).setScale(2))
+                            .price(prepareAmount(itemsLine.getPrice().getAmount()))
                             .sum(sum)
                             .vat(Vat.builder().type(itemsLine.getTax()).build())
                             .paymentMethod(options.get(OptionalField.PAYMENT_METHOD.getField()))
