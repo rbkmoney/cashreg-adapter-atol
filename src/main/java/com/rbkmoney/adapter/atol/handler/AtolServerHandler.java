@@ -4,16 +4,16 @@ package com.rbkmoney.adapter.atol.handler;
 import com.rbkmoney.adapter.atol.converter.entry.CtxToEntryModelConverter;
 import com.rbkmoney.adapter.atol.converter.exit.ExitModelToProxyResultConverter;
 import com.rbkmoney.adapter.atol.service.atol.model.response.CommonResponse;
-import com.rbkmoney.adapter.atol.validator.CashRegContextValidator;
+import com.rbkmoney.adapter.atol.validator.CashregContextValidator;
 import com.rbkmoney.adapter.cashreg.spring.boot.starter.exception.UnsupportedMethodException;
 import com.rbkmoney.adapter.cashreg.spring.boot.starter.flow.StepResolver;
 import com.rbkmoney.adapter.cashreg.spring.boot.starter.handler.CommonHandler;
 import com.rbkmoney.adapter.cashreg.spring.boot.starter.model.EntryStateModel;
 import com.rbkmoney.adapter.cashreg.spring.boot.starter.model.ExitStateModel;
 import com.rbkmoney.adapter.common.Validator;
-import com.rbkmoney.damsel.cashreg.provider.CashRegContext;
-import com.rbkmoney.damsel.cashreg.provider.CashRegProviderSrv;
-import com.rbkmoney.damsel.cashreg.provider.CashRegResult;
+import com.rbkmoney.damsel.cashreg.adapter.CashregAdapterSrv;
+import com.rbkmoney.damsel.cashreg.adapter.CashregContext;
+import com.rbkmoney.damsel.cashreg.adapter.CashregResult;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.thrift.TException;
@@ -28,18 +28,18 @@ import java.util.List;
 @Primary
 @Component
 @RequiredArgsConstructor
-public class AtolServerHandler implements CashRegProviderSrv.Iface {
+public class AtolServerHandler implements CashregAdapterSrv.Iface {
 
     private final CtxToEntryModelConverter ctxToEntryModelConverter;
     private final ExitModelToProxyResultConverter exitModelToProxyResultConverter;
     private final StepResolver stepResolver;
-    private final CashRegContextValidator cashRegContextValidator;
+    private final CashregContextValidator cashregContextValidator;
     private final List<CommonHandler<ExitStateModel, CommonResponse, EntryStateModel>> handlers;
 
     @Override
-    public CashRegResult register(CashRegContext context) throws TException {
+    public CashregResult register(CashregContext context) throws TException {
         return handle(
-                cashRegContextValidator,
+                cashregContextValidator,
                 ctxToEntryModelConverter,
                 exitModelToProxyResultConverter,
                 context
