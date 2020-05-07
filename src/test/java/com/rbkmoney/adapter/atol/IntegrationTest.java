@@ -32,7 +32,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @Slf4j
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = DEFINED_PORT)
-@ContextConfiguration(classes = CashregAtolApplication.class)
+@ContextConfiguration(classes = CashregAtolApplication1.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public abstract class IntegrationTest {
 
@@ -112,6 +112,5 @@ public abstract class IntegrationTest {
         paymentInfo.setEmail(TestData.TEST_EMAIL);
         return paymentInfo;
     }
-
 
 }

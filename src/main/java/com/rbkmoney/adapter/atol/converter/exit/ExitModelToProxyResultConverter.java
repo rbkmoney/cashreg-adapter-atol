@@ -43,7 +43,7 @@ public class ExitModelToProxyResultConverter implements Converter<ExitStateModel
 
         Intent intent = CashregAdapterCreators.createFinishIntentSuccess();
         if (exitStateModel.getErrorCode() != null) {
-            Failure failure = errorMapping.getFailureByCodeAndDescription(
+            Failure failure = errorMapping.mapFailure(
                     exitStateModel.getErrorCode(),
                     exitStateModel.getErrorMessage()
             );

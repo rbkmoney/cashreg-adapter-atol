@@ -4,7 +4,7 @@ package com.rbkmoney.adapter.atol.handler;
 import com.rbkmoney.adapter.atol.converter.entry.CtxToEntryModelConverter;
 import com.rbkmoney.adapter.atol.converter.exit.ExitModelToProxyResultConverter;
 import com.rbkmoney.adapter.atol.service.atol.model.response.CommonResponse;
-import com.rbkmoney.adapter.atol.validator.CashregContextValidator;
+import com.rbkmoney.adapter.atol.validator.CashregContextValidator1;
 import com.rbkmoney.adapter.cashreg.spring.boot.starter.exception.UnsupportedMethodException;
 import com.rbkmoney.adapter.cashreg.spring.boot.starter.flow.StepResolver;
 import com.rbkmoney.adapter.cashreg.spring.boot.starter.handler.CommonHandler;
@@ -33,7 +33,7 @@ public class AtolServerHandler implements CashregAdapterSrv.Iface {
     private final CtxToEntryModelConverter ctxToEntryModelConverter;
     private final ExitModelToProxyResultConverter exitModelToProxyResultConverter;
     private final StepResolver stepResolver;
-    private final CashregContextValidator cashregContextValidator;
+    private final CashregContextValidator1 cashregContextValidator;
     private final List<CommonHandler<ExitStateModel, CommonResponse, EntryStateModel>> handlers;
 
     @Override

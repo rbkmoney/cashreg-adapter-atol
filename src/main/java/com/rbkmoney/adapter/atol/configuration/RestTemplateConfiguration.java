@@ -25,7 +25,6 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 
-
 @Configuration
 public class RestTemplateConfiguration {
 
