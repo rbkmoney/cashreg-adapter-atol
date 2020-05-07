@@ -11,7 +11,7 @@ import java.util.Objects;
 
 @Component
 @RequiredArgsConstructor
-public class CashregContextValidator1 implements Validator<CashregContext> {
+public class CashregContextValidator implements Validator<CashregContext> {
 
     @Override
     public void validate(CashregContext context) {
