@@ -5,7 +5,7 @@ import com.rbkmoney.adapter.atol.service.atol.model.request.CommonRequest;
 import com.rbkmoney.adapter.atol.service.atol.model.request.RequestWrapper;
 import com.rbkmoney.adapter.atol.service.atol.model.response.CommonResponse;
 
-public interface AdapterCashReg {
+public interface AdapterCashreg {
 
     CommonResponse debit(RequestWrapper<CommonRequest> request);
 

@@ -13,7 +13,7 @@ import org.springframework.http.ResponseEntity;
 @Getter
 @Setter
 @RequiredArgsConstructor
-public class AtolClient implements AdapterCashReg {
+public class AtolClient implements AdapterCashreg {
 
     private final AtolApi api;
 

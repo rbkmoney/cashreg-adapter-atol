@@ -1,0 +1,8 @@
+[
+  {
+    "codeRegex": "003",
+    "descriptionRegex": "Invalid cardholder",
+    "mapping": "authorization_failed:operation_blocked",
+    "state": "payment"
+  }
+]

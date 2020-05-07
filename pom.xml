@@ -30,10 +30,11 @@
         <dockerfile.registry>dr2.rbkmoney.com</dockerfile.registry>
         <shared.resources.version>0.3.6</shared.resources.version>
         <logstash-logback-encoder.version>5.2</logstash-logback-encoder.version>
-        <nop-rolling.version>1.0.1</nop-rolling.version>
         <geck.version>0.6.9</geck.version>
         <lombok.version>1.18.4</lombok.version>
-        <adapter-common-lib.version>0.0.8</adapter-common-lib.version>
+        <error-mapping.version>1.0.5</error-mapping.version>
+        <cashreg-proto.version>1.14-25a9f63</cashreg-proto.version>
+        <adapter-common-lib.version>0.0.23</adapter-common-lib.version>
         <testcontainers.version>1.10.2</testcontainers.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -44,12 +45,12 @@
         <dependency>
             <groupId>com.rbkmoney</groupId>
             <artifactId>adapter-cashreg-spring-boot-starter</artifactId>
-            <version>1.0.0</version>
+            <version>1.0.1</version>
         </dependency>
         <dependency>
             <groupId>com.rbkmoney</groupId>
             <artifactId>cashreg-proto</artifactId>
-            <version>1.9-9c79023</version>
+            <version>${cashreg-proto.version}</version>
         </dependency>
         <!--Thrirdparty libs-->
         <dependency>
@@ -59,7 +60,7 @@
         <dependency>
             <groupId>com.rbkmoney</groupId>
             <artifactId>error-mapping-java</artifactId>
-            <version>1.0.0</version>
+            <version>${error-mapping.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -99,12 +100,7 @@
         <dependency>
             <groupId>com.rbkmoney.woody</groupId>
             <artifactId>woody-thrift</artifactId>
-            <version>1.1.15</version>
-        </dependency>
-        <dependency>
-            <groupId>com.rbkmoney.logback</groupId>
-            <artifactId>nop-rolling</artifactId>
-            <version>${nop-rolling.version}</version>
+            <version>1.1.16</version>
         </dependency>
         <dependency>
             <groupId>com.rbkmoney</groupId>
@@ -115,6 +111,12 @@
             <groupId>com.rbkmoney</groupId>
             <artifactId>adapter-common-lib</artifactId>
             <version>${adapter-common-lib.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.rbkmoney</groupId>
+                    <artifactId>error-mapping-java</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.rbkmoney</groupId>

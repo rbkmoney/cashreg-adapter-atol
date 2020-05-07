@@ -9,7 +9,7 @@ import com.rbkmoney.adapter.cashreg.spring.boot.starter.model.EntryStateModel;
 import com.rbkmoney.adapter.cashreg.spring.boot.starter.model.ExitStateModel;
 import com.rbkmoney.adapter.cashreg.spring.boot.starter.model.Step;
 import com.rbkmoney.adapter.cashreg.spring.boot.starter.processor.Processor;
-import com.rbkmoney.damsel.cashreg.CashRegInfo;
+import com.rbkmoney.damsel.cashreg.receipt.ReceiptInfo;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -25,18 +25,18 @@ public class SuccessProcessor implements Processor<ExitStateModel, EntryStateMod
 
             AdapterState adapterState = entryStateModel.getState().getAdapterContext();
             adapterState.setReceiptId(response.getUuid());
-            adapterState.setCashRegId(entryStateModel.getCashRegId());
+            adapterState.setCashregId(entryStateModel.getCashRegId());
 
             if (Step.CHECK_STATUS.equals(entryStateModel.getState().getAdapterContext().getNextStep())) {
                 if (Status.DONE.getValue().equalsIgnoreCase(response.getStatus())) {
-                    CashRegInfo cashRegInfo = new CashRegInfo();
-                    cashRegInfo.setReceiptId(response.getUuid());
-                    cashRegInfo.setCallbackUrl(response.getCallbackUrl());
-                    cashRegInfo.setDaemonCode(response.getDaemonCode());
-                    cashRegInfo.setDeviceCode(response.getDeviceCode());
-                    cashRegInfo.setGroupCode(response.getGroupCode());
-                    cashRegInfo.setTimestamp(response.getTimestamp());
-                    exitStateModel.setCashRegInfo(cashRegInfo);
+                    ReceiptInfo receiptInfo = new ReceiptInfo()
+                            .setReceiptId(response.getUuid())
+                            .setCallbackUrl(response.getCallbackUrl())
+                            .setDaemonCode(response.getDaemonCode())
+                            .setDeviceCode(response.getDeviceCode())
+                            .setGroupCode(response.getGroupCode())
+                            .setTimestamp(response.getTimestamp());
+                    exitStateModel.setInfo(receiptInfo);
                 }
             } else if (Step.CREATE.equals(entryStateModel.getState().getAdapterContext().getNextStep())) {
                 adapterState.setNextStep(Step.CHECK_STATUS);

@@ -1,6 +1,6 @@
 package com.rbkmoney.adapter.atol.servlet;
 
-import com.rbkmoney.damsel.cashreg.provider.CashRegProviderSrv;
+import com.rbkmoney.damsel.cashreg.adapter.CashregAdapterSrv;
 import com.rbkmoney.woody.thrift.impl.http.THServiceBuilder;
 import lombok.RequiredArgsConstructor;
 
@@ -12,14 +12,14 @@ import java.io.IOException;
 @WebServlet("/adapter/cashreg/atol")
 public class AdapterServlet extends GenericServlet {
 
-    private final CashRegProviderSrv.Iface handler;
+    private final CashregAdapterSrv.Iface handler;
 
     private Servlet servlet;
 
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
-        servlet = new THServiceBuilder().build(CashRegProviderSrv.Iface.class, handler);
+        servlet = new THServiceBuilder().build(CashregAdapterSrv.Iface.class, handler);
     }
 
     @Override

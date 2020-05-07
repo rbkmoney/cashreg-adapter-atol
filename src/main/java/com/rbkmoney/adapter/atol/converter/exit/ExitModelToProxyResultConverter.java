@@ -7,9 +7,9 @@ import com.rbkmoney.adapter.cashreg.spring.boot.starter.model.EntryStateModel;
 import com.rbkmoney.adapter.cashreg.spring.boot.starter.model.ExitStateModel;
 import com.rbkmoney.adapter.cashreg.spring.boot.starter.model.Step;
 import com.rbkmoney.adapter.cashreg.spring.boot.starter.state.serializer.AdapterSerializer;
-import com.rbkmoney.adapter.cashreg.spring.boot.starter.utils.creators.CashRegProviderCreators;
-import com.rbkmoney.damsel.cashreg.provider.CashRegResult;
-import com.rbkmoney.damsel.cashreg.provider.Intent;
+import com.rbkmoney.adapter.cashreg.spring.boot.starter.utils.creators.CashregAdapterCreators;
+import com.rbkmoney.damsel.cashreg.adapter.CashregResult;
+import com.rbkmoney.damsel.cashreg.adapter.Intent;
 import com.rbkmoney.damsel.domain.Failure;
 import com.rbkmoney.error.mapping.ErrorMapping;
 import lombok.RequiredArgsConstructor;
@@ -25,14 +25,14 @@ import static java.time.temporal.ChronoUnit.MINUTES;
 
 @Component
 @RequiredArgsConstructor
-public class ExitModelToProxyResultConverter implements Converter<ExitStateModel, CashRegResult> {
+public class ExitModelToProxyResultConverter implements Converter<ExitStateModel, CashregResult> {
 
     private final ErrorMapping errorMapping;
     private final TimerProperties timerProperties;
     private final AdapterSerializer serializer;
 
     @Override
-    public CashRegResult convert(ExitStateModel exitStateModel) {
+    public CashregResult convert(ExitStateModel exitStateModel) {
         EntryStateModel entryStateModel = exitStateModel.getEntryStateModel();
         AdapterState adapterState = entryStateModel.getState().getAdapterContext();
         if (adapterState.getMaxDateTimePolling() == null) {
@@ -41,31 +41,31 @@ public class ExitModelToProxyResultConverter implements Converter<ExitStateModel
             adapterState.setMaxDateTimePolling(maxDateTime);
         }
 
-        Intent intent = CashRegProviderCreators.createFinishIntentSuccess();
+        Intent intent = CashregAdapterCreators.createFinishIntentSuccess();
         if (exitStateModel.getErrorCode() != null) {
-            Failure failure = errorMapping.getFailureByCodeAndDescription(
+            Failure failure = errorMapping.mapFailure(
                     exitStateModel.getErrorCode(),
                     exitStateModel.getErrorMessage()
             );
-            intent = CashRegProviderCreators.createFinishIntentFailure(failure);
+            intent = CashregAdapterCreators.createFinishIntentFailure(failure);
         }
 
-        if (exitStateModel.getCashRegInfo() == null) {
+        if (exitStateModel.getInfo() == null) {
             Map<String, String> options = entryStateModel.getOptions();
-            intent = CashRegProviderCreators.createIntentWithSleepIntent(extractPollingDelay(options, timerProperties.getPollingDelay()));
+            intent = CashregAdapterCreators.createIntentWithSleepIntent(extractPollingDelay(options, timerProperties.getPollingDelay()));
         }
 
         if (Step.CREATE == adapterState.getNextStep()) {
             adapterState.setNextStep(Step.CHECK_STATUS);
         }
 
-        CashRegResult cashRegResult = new CashRegResult()
+        CashregResult cashRegResult = new CashregResult()
                 .setIntent(intent)
                 .setState(serializer.writeByte(adapterState));
 
-        if (exitStateModel.getCashRegInfo() != null) {
+        if (exitStateModel.getInfo() != null) {
             entryStateModel.getState().getAdapterContext().setNextStep(Step.CHECK_STATUS);
-            cashRegResult.setCashregInfo(exitStateModel.getCashRegInfo());
+            cashRegResult.setInfo(exitStateModel.getInfo());
         }
 
         return cashRegResult;
