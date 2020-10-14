@@ -4,5 +4,10 @@
     "descriptionRegex": "Invalid cardholder",
     "mapping": "authorization_failed:operation_blocked",
     "state": "payment"
+  },
+  {
+    "codeRegex": "1",
+    "descriptionRegex": "test",
+    "mapping": "authorization_failed:operation_blocked"
   }
 ]

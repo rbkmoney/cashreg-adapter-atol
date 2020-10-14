@@ -25,7 +25,7 @@ public class MockUtils {
             response.setPayload(Payload.builder()
                     .fnNumber("fnNumber")
                     .fiscalReceiptNumber(1L)
-            .build());
+                    .build());
             response.setUuid("uuid");
             return response;
         }).when(client).status(any());

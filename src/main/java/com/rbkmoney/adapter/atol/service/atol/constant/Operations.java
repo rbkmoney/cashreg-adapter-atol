@@ -8,7 +8,7 @@ import lombok.Getter;
  */
 @Getter
 @AllArgsConstructor
-public enum  Operations {
+public enum Operations {
 
     // чек «Приход»
     SELL("sell"),

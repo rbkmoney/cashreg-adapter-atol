@@ -10,6 +10,7 @@ import com.rbkmoney.adapter.atol.service.atol.model.Receipt;
 import com.rbkmoney.adapter.atol.service.atol.model.Service;
 import com.rbkmoney.adapter.atol.service.atol.model.request.CommonRequest;
 import com.rbkmoney.adapter.atol.service.atol.model.request.RequestWrapper;
+import com.rbkmoney.adapter.atol.utils.DateFormate;
 import com.rbkmoney.adapter.cashreg.spring.boot.starter.config.properties.AdapterCashregProperties;
 import com.rbkmoney.adapter.cashreg.spring.boot.starter.constant.OptionalField;
 import com.rbkmoney.adapter.cashreg.spring.boot.starter.model.EntryStateModel;
@@ -33,10 +34,9 @@ public class EntryStateToCommonRequestConverter implements Converter<EntryStateM
     public RequestWrapper<CommonRequest> convert(EntryStateModel entryStateModel) {
 
         CommonRequest commonRequest = new CommonRequest();
-        commonRequest.setLogin(entryStateModel.getAuth().getLogin());
-        commonRequest.setPass(entryStateModel.getAuth().getPass());
 
         commonRequest.setExternalId(entryStateModel.getCashRegId());
+        commonRequest.setTimestamp(DateFormate.getCurrentDate());
 
         commonRequest.setReceipt(
                 Receipt.builder()
@@ -56,7 +56,6 @@ public class EntryStateToCommonRequestConverter implements Converter<EntryStateM
                         .payments(paymentsTransformer.transform(entryStateModel.getPayments())) //
                         .items(itemsTransformer.transform(entryStateModel.getItems()))
                         .total(entryStateModel.getTotal()) //
-                        .vats(vatsTransformer.transform(entryStateModel.getVats())) //
                         .build());
 
         Service service = Service.builder().callbackUrl(entryStateModel.getCallbackUrl()).build();
@@ -68,7 +67,9 @@ public class EntryStateToCommonRequestConverter implements Converter<EntryStateM
                 entryStateModel.getOptions().get(OptionalField.GROUP.getField()),
                 entryStateModel.getOptions().get(OptionalField.COMPANY_NAME.getField()),
                 entryStateModel.getOptions().get(OptionalField.COMPANY_ADDRESS.getField()),
-                DEFAULT_EMPTY_VALUE_TOKEN_API
+                DEFAULT_EMPTY_VALUE_TOKEN_API,
+                entryStateModel.getOptions().get(OptionalField.LOGIN.getField()),
+                entryStateModel.getOptions().get(OptionalField.PASS.getField())
         );
     }
 

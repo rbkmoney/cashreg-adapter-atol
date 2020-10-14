@@ -36,13 +36,8 @@ public class CtxToEntryModelConverter implements Converter<CashregContext, Entry
         Map<String, String> options = context.getOptions();
         EntryStateModel.EntryStateModelBuilder builder = EntryStateModel.builder();
 
-        builder.options(context.getOptions());
+        builder.options(options);
         builder.cashRegId(context.getCashregId());
-
-        builder.auth(Auth.builder()
-                .login(options.get(OptionalField.LOGIN.getField()))
-                .pass(options.get(OptionalField.PASS.getField()))
-                .build());
 
         PaymentInfo paymentInfo = context.getSourceCreation().getPayment();
         builder.client(Client.builder()
@@ -64,7 +59,6 @@ public class CtxToEntryModelConverter implements Converter<CashregContext, Entry
 
         List<ItemsLine> itemsLines = paymentInfo.getCart().getLines();
         builder.payments(itemsLines.stream().map(this::preparePayments).collect(Collectors.toList()));
-        builder.vats(itemsLines.stream().map(this::prepareVat).collect(Collectors.toList()));
 
         TargetType targetType = TargetTypeResolver.resolve(context.getSession().getType());
         StateModel.StateModelBuilder stateModelBuilder = StateModel.builder()
@@ -78,12 +72,6 @@ public class CtxToEntryModelConverter implements Converter<CashregContext, Entry
         return builder.build();
     }
 
-    private Vat prepareVat(ItemsLine itemsLine) {
-        return Vat.builder()
-                .sum(prepareAmount(itemsLine.getPrice().getAmount()))
-                .type(itemsLine.getTax())
-                .build();
-    }
 
     private Payments preparePayments(ItemsLine itemsLine) {
         BigDecimal fullPriceAmount = prepareAmount(itemsLine.getPrice().getAmount() * itemsLine.getQuantity());
@@ -103,7 +91,10 @@ public class CtxToEntryModelConverter implements Converter<CashregContext, Entry
                             .quantity(new BigDecimal(itemsLine.getQuantity()).setScale(1))
                             .price(prepareAmount(itemsLine.getPrice().getAmount()))
                             .sum(sum)
-                            .vat(Vat.builder().type(itemsLine.getTax()).build())
+                            .vat(Vat.builder().type(
+                                    com.rbkmoney.adapter.atol.service.atol.constant.Vat.codeTextOf(
+                                            itemsLine.getTax()).getCode())
+                                    .build())
                             .paymentMethod(options.get(OptionalField.PAYMENT_METHOD.getField()))
                             .paymentObject(options.get(OptionalField.PAYMENT_OBJECT.getField()))
                             .name(itemsLine.getProduct())

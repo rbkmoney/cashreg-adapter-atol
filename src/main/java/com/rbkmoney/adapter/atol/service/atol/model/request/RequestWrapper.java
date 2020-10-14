@@ -12,4 +12,6 @@ public class RequestWrapper<R> {
     private String company;
     private String companyAddress;
     private String token;
+    private String login;
+    private String password;
 }
