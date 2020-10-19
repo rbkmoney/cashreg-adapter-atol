@@ -24,7 +24,9 @@ public class SuccessProcessor implements Processor<ExitStateModel, EntryStateMod
             exitStateModel.setEntryStateModel(entryStateModel);
 
             AdapterState adapterState = entryStateModel.getState().getAdapterContext();
-            adapterState.setReceiptId(response.getUuid());
+            if (response.getUuid() != null) {
+                adapterState.setReceiptId(response.getUuid());
+            }
             adapterState.setCashregId(entryStateModel.getCashRegId());
 
             if (Step.CHECK_STATUS.equals(entryStateModel.getState().getAdapterContext().getNextStep())) {
