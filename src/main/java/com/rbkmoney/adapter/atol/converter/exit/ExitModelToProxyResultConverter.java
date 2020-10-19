@@ -48,6 +48,7 @@ public class ExitModelToProxyResultConverter implements Converter<ExitStateModel
                     exitStateModel.getErrorMessage()
             );
             intent = CashregAdapterCreators.createFinishIntentFailure(failure);
+            return new CashregResult().setIntent(intent).setState(serializer.writeByte(adapterState));
         }
 
         if (exitStateModel.getInfo() == null) {

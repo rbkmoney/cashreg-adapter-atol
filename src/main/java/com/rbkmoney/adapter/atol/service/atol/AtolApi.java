@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rbkmoney.adapter.atol.service.atol.constant.Operations;
 import com.rbkmoney.adapter.atol.service.atol.model.request.CommonRequest;
+import com.rbkmoney.adapter.atol.service.atol.model.request.GetTokenRequest;
 import com.rbkmoney.adapter.atol.service.atol.model.request.RequestWrapper;
 import com.rbkmoney.adapter.atol.service.atol.model.response.CommonResponse;
 import com.rbkmoney.adapter.cashreg.spring.boot.starter.utils.converter.ip.ConverterIp;
@@ -28,9 +29,9 @@ public class AtolApi {
         String url = converterIp.replaceIpv4ToIpv6(requestWrapper.getUrl() + "getToken");
         log.info("Atol getToken URL {}", url);
 
-        CommonRequest request = new CommonRequest();
-        request.setLogin(requestWrapper.getRequest().getLogin());
-        request.setPass(requestWrapper.getRequest().getPass());
+        GetTokenRequest request = new GetTokenRequest();
+        request.setLogin(requestWrapper.getLogin());
+        request.setPass(requestWrapper.getPassword());
         try {
             String body = objectMapper.writeValueAsString(request);
             HttpEntity httpEntity = new HttpEntity(body, getHttpHeaders());

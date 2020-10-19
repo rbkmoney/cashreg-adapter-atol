@@ -25,8 +25,12 @@ public class ErrorProcessor implements Processor<ExitStateModel, EntryStateModel
         }
 
         ExitStateModel exitStateModel = new ExitStateModel();
+        exitStateModel.setAdapterContext(adapterState);
+        exitStateModel.setEntryStateModel(entryStateModel);
         if (ErrorUtils.hasError(response)) {
-            exitStateModel.setEntryStateModel(entryStateModel);
+            com.rbkmoney.adapter.atol.service.atol.model.Error error = response.getError();
+            exitStateModel.setErrorCode(error.getCode().toString());
+            exitStateModel.setErrorMessage(error.getText());
         } else if (adapterState.getMaxDateTimePolling().getEpochSecond() < currentTime.getEpochSecond()) {
             log.error("Sleep Timeout for response: {}!", response);
             exitStateModel.setErrorCode(com.rbkmoney.adapter.cashreg.spring.boot.starter.constant.Error.SLEEP_TIMEOUT.getCode());
