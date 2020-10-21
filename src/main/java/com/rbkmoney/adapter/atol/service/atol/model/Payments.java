@@ -3,18 +3,14 @@ package com.rbkmoney.adapter.atol.service.atol.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.Data;
 
 import java.math.BigDecimal;
 
 /**
  * Оплата. Ограничение по количеству от 1 до 10.
  */
-@ToString
-@Getter
-@Setter
+@Data
 @Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)

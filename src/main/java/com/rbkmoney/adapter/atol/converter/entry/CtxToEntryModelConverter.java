@@ -37,7 +37,11 @@ public class CtxToEntryModelConverter implements Converter<CashregContext, Entry
         EntryStateModel.EntryStateModelBuilder builder = EntryStateModel.builder();
 
         builder.options(options);
-        builder.cashRegId(context.getCashregId());
+        if (adapterState.getReceiptId() != null) {
+            builder.cashRegId(adapterState.getReceiptId());
+        } else {
+            builder.cashRegId(context.getCashregId());
+        }
 
         PaymentInfo paymentInfo = context.getSourceCreation().getPayment();
         builder.client(Client.builder()
