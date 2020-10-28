@@ -12,6 +12,9 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.time.Instant;
 
+import static com.rbkmoney.adapter.cashreg.spring.boot.starter.constant.Error.*;
+import static com.rbkmoney.adapter.cashreg.spring.boot.starter.constant.Error.SLEEP_TIMEOUT;
+
 @Slf4j
 @RequiredArgsConstructor
 public class ErrorProcessor implements Processor<ExitStateModel, EntryStateModel, CommonResponse> {
@@ -31,15 +34,14 @@ public class ErrorProcessor implements Processor<ExitStateModel, EntryStateModel
             com.rbkmoney.adapter.atol.service.atol.model.Error error = response.getError();
             exitStateModel.setErrorCode(error.getCode().toString());
             exitStateModel.setErrorMessage(error.getText());
-        } else if (adapterState.getMaxDateTimePolling().getEpochSecond() < currentTime.getEpochSecond()) {
+        } else if (adapterState.getPollingInfo().getMaxDateTimePolling().getEpochSecond() < currentTime.getEpochSecond()) {
             log.error("Sleep Timeout for response: {}!", response);
-            exitStateModel.setErrorCode(com.rbkmoney.adapter.cashreg.spring.boot.starter.constant.Error.SLEEP_TIMEOUT.getCode());
-            exitStateModel.setErrorMessage(com.rbkmoney.adapter.cashreg.spring.boot.starter.constant.Error.SLEEP_TIMEOUT.getMessage());
-
+            exitStateModel.setErrorCode(SLEEP_TIMEOUT.getCode());
+            exitStateModel.setErrorMessage(SLEEP_TIMEOUT.getMessage());
         } else {
             log.error("Unknown result code for response: {}!", response);
-            exitStateModel.setErrorCode(com.rbkmoney.adapter.cashreg.spring.boot.starter.constant.Error.UNKNOWN.getCode());
-            exitStateModel.setErrorMessage(com.rbkmoney.adapter.cashreg.spring.boot.starter.constant.Error.UNKNOWN.getMessage());
+            exitStateModel.setErrorCode(UNKNOWN.getCode());
+            exitStateModel.setErrorMessage(UNKNOWN.getMessage());
         }
         return exitStateModel;
     }
