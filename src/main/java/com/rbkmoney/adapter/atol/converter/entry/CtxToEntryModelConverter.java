@@ -27,11 +27,11 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class CtxToEntryModelConverter implements Converter<CashregContext, EntryStateModel> {
 
-    private final CashregAdapterContextConverter cashRegAdapterContextConveter;
+    private final CashregAdapterContextConverter cashregAdapterContextConverter;
 
     @Override
     public EntryStateModel convert(CashregContext context) {
-        AdapterState adapterState = cashRegAdapterContextConveter.convert(context);
+        AdapterState adapterState = cashregAdapterContextConverter.convert(context);
 
         Map<String, String> options = context.getOptions();
         EntryStateModel.EntryStateModelBuilder builder = EntryStateModel.builder();

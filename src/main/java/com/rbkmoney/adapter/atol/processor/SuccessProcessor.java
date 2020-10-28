@@ -19,35 +19,35 @@ public class SuccessProcessor implements Processor<ExitStateModel, EntryStateMod
 
     @Override
     public ExitStateModel process(CommonResponse response, EntryStateModel entryStateModel) {
-        if (!ErrorUtils.hasError(response)) {
-            ExitStateModel exitStateModel = new ExitStateModel();
-            exitStateModel.setEntryStateModel(entryStateModel);
-
-            AdapterState adapterState = entryStateModel.getState().getAdapterContext();
-            if (response.getUuid() != null) {
-                adapterState.setReceiptId(response.getUuid());
-            }
-            adapterState.setCashregId(entryStateModel.getCashRegId());
-
-            if (Step.CHECK_STATUS.equals(entryStateModel.getState().getAdapterContext().getNextStep())) {
-                if (Status.DONE.getValue().equalsIgnoreCase(response.getStatus())) {
-                    ReceiptInfo receiptInfo = new ReceiptInfo()
-                            .setReceiptId(response.getUuid())
-                            .setCallbackUrl(response.getCallbackUrl())
-                            .setDaemonCode(response.getDaemonCode())
-                            .setDeviceCode(response.getDeviceCode())
-                            .setGroupCode(response.getGroupCode())
-                            .setTimestamp(response.getTimestamp());
-                    exitStateModel.setInfo(receiptInfo);
-                }
-            } else if (Step.CREATE.equals(entryStateModel.getState().getAdapterContext().getNextStep())) {
-                adapterState.setNextStep(Step.CHECK_STATUS);
-            }
-            exitStateModel.setAdapterContext(adapterState);
-            return exitStateModel;
+        if (ErrorUtils.hasError(response)) {
+            return nextProcessor.process(response, entryStateModel);
         }
 
-        return nextProcessor.process(response, entryStateModel);
+        ExitStateModel exitStateModel = new ExitStateModel();
+        exitStateModel.setEntryStateModel(entryStateModel);
+
+        AdapterState adapterState = entryStateModel.getState().getAdapterContext();
+        if (response.getUuid() != null) {
+            adapterState.setReceiptId(response.getUuid());
+        }
+        adapterState.setCashregId(entryStateModel.getCashRegId());
+
+        if (Step.CHECK_STATUS.equals(entryStateModel.getState().getAdapterContext().getNextStep())) {
+            if (Status.DONE.getValue().equalsIgnoreCase(response.getStatus())) {
+                ReceiptInfo receiptInfo = new ReceiptInfo()
+                        .setReceiptId(response.getUuid())
+                        .setCallbackUrl(response.getCallbackUrl())
+                        .setDaemonCode(response.getDaemonCode())
+                        .setDeviceCode(response.getDeviceCode())
+                        .setGroupCode(response.getGroupCode())
+                        .setTimestamp(response.getTimestamp());
+                exitStateModel.setInfo(receiptInfo);
+            }
+        } else if (Step.CREATE.equals(entryStateModel.getState().getAdapterContext().getNextStep())) {
+            adapterState.setNextStep(Step.CHECK_STATUS);
+        }
+        exitStateModel.setAdapterContext(adapterState);
+        return exitStateModel;
     }
 
 }
