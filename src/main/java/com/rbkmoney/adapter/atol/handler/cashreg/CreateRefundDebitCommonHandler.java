@@ -13,7 +13,6 @@ import com.rbkmoney.adapter.cashreg.spring.boot.starter.processor.Processor;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
-
 @Component
 public class CreateRefundDebitCommonHandler extends CommonHandlerImpl<ExitStateModel, RequestWrapper<CommonRequest>, CommonResponse, EntryStateModel> {
 

@@ -1,6 +1,5 @@
 package com.rbkmoney.adapter.atol.service.atol.constant;
 
-
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

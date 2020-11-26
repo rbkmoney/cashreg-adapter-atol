@@ -1,5 +1,9 @@
 package com.rbkmoney.adapter.atol.service.atol.constant;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class PaymentType {
 
     public static final int ELECTRONIC = 1;

@@ -1,6 +1,5 @@
 package com.rbkmoney.adapter.atol.handler.cashreg;
 
-
 import com.rbkmoney.adapter.atol.service.atol.AtolClient;
 import com.rbkmoney.adapter.atol.service.atol.model.request.CommonRequest;
 import com.rbkmoney.adapter.atol.service.atol.model.request.RequestWrapper;
@@ -13,7 +12,6 @@ import com.rbkmoney.adapter.cashreg.spring.boot.starter.model.Step;
 import com.rbkmoney.adapter.cashreg.spring.boot.starter.processor.Processor;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
-
 
 @Component
 public class CreateRefundCreditCommonHandler extends CommonHandlerImpl<ExitStateModel, RequestWrapper<CommonRequest>, CommonResponse, EntryStateModel> {

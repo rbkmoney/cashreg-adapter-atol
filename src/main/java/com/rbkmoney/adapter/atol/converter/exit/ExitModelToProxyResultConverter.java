@@ -12,11 +12,13 @@ import com.rbkmoney.adapter.common.model.PollingInfo;
 import com.rbkmoney.damsel.cashreg.adapter.CashregResult;
 import com.rbkmoney.damsel.cashreg.adapter.Intent;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class ExitModelToProxyResultConverter implements Converter<ExitStateModel, CashregResult> {
@@ -29,12 +31,16 @@ public class ExitModelToProxyResultConverter implements Converter<ExitStateModel
         EntryStateModel entryStateModel = exitStateModel.getEntryStateModel();
         AdapterState adapterState = entryStateModel.getState().getAdapterContext();
 
+        log.info("ExitStateModel convert start {} ", exitStateModel);
+
         PollingInfo pollingInfo = new PollingInfo();
         if (adapterState.getPollingInfo() == null) {
             pollingInfo.setStartDateTimePolling(Instant.now());
             pollingInfo.setMaxDateTimePolling(intentService.extractMaxDateTimeInstant(entryStateModel));
             adapterState.setPollingInfo(pollingInfo);
+            exitStateModel.getAdapterContext().setPollingInfo(adapterState.getPollingInfo());
         }
+        log.info("ExitStateModel convert start, polling set {} ", exitStateModel);
 
         Intent intent = CashregAdapterCreators.createFinishIntentSuccess();
         if (exitStateModel.getErrorCode() != null) {

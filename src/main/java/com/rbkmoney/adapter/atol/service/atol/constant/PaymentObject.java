@@ -3,7 +3,6 @@ package com.rbkmoney.adapter.atol.service.atol.constant;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-
 /**
  * Признак предмета расчёта
  */
@@ -29,7 +28,6 @@ public enum PaymentObject {
     INSURANCE_PREMIUM("insurance_premium", "страховые взносы. О суммах расходов, уменьшающих сумму налога (авансовых платежей) в соответствии с пунктом 3.1 статьи 346.21 Налогового кодекса Российской Федерации"),
     SALES_TAX("sales_tax", "торговый сбор. О суммах уплаченного торгового сбора"),
     RESORT_FEE("resort_fee", "курортный сбор. О курортном сборе");
-
 
     private final String type;
     private final String description;
