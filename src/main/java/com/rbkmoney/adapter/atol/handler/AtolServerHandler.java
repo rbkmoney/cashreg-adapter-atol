@@ -1,6 +1,5 @@
 package com.rbkmoney.adapter.atol.handler;
 
-
 import com.rbkmoney.adapter.atol.converter.entry.CtxToEntryModelConverter;
 import com.rbkmoney.adapter.atol.converter.exit.ExitModelToProxyResultConverter;
 import com.rbkmoney.adapter.atol.service.atol.model.response.CommonResponse;
@@ -22,7 +21,6 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-
 
 @Slf4j
 @Primary

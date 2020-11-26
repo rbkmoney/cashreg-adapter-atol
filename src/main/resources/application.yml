@@ -24,14 +24,19 @@ converterIp:
   nat64prefix: "2a04:4a00:5:10ff:4:1:"
 ---
 restTemplate:
-  networkTimeout: 60000
+  requestTimeout: 60000
+  poolTimeout: 10000
+  connectionTimeout: 10000
+  maxTotalPooling: 200
+  defaultMaxPerRoute: 200
 ---
 adapter-cashreg:
   url: "https://online.atol.ru/possystem/v4/"
 ---
-timer:
-  maxTimePolling: 600
-  pollingDelay: 600
+time:
+  config:
+    maxTimePolling: 600
+    pollingDelay: 600
 ---
 error-mapping:
   file: classpath:fixture/errors.json

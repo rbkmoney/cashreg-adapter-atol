@@ -1,6 +1,5 @@
 package com.rbkmoney.adapter.atol.converter.entry;
 
-
 import com.rbkmoney.adapter.atol.service.atol.constant.PaymentType;
 import com.rbkmoney.adapter.cashreg.spring.boot.starter.constant.OptionalField;
 import com.rbkmoney.adapter.cashreg.spring.boot.starter.constant.TargetType;
@@ -76,7 +75,6 @@ public class CtxToEntryModelConverter implements Converter<CashregContext, Entry
         return builder.build();
     }
 
-
     private Payments preparePayments(ItemsLine itemsLine) {
         BigDecimal fullPriceAmount = prepareAmount(itemsLine.getPrice().getAmount() * itemsLine.getQuantity());
         return Payments.builder().sum(fullPriceAmount).type(PaymentType.ELECTRONIC).build();
@@ -105,7 +103,6 @@ public class CtxToEntryModelConverter implements Converter<CashregContext, Entry
                             .build()
             );
         });
-
         return itemsList;
     }
 

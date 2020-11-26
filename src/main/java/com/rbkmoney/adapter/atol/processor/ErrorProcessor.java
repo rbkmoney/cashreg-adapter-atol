@@ -1,6 +1,5 @@
 package com.rbkmoney.adapter.atol.processor;
 
-
 import com.rbkmoney.adapter.atol.service.atol.model.response.CommonResponse;
 import com.rbkmoney.adapter.atol.utils.ErrorUtils;
 import com.rbkmoney.adapter.cashreg.spring.boot.starter.model.AdapterState;

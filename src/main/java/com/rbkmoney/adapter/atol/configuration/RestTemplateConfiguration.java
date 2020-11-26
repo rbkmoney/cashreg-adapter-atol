@@ -1,13 +1,15 @@
 package com.rbkmoney.adapter.atol.configuration;
 
-import com.rbkmoney.woody.api.trace.ContextUtils;
-import com.rbkmoney.woody.api.trace.context.TraceContext;
+import com.rbkmoney.adapter.atol.configuration.properties.RestTemplateProperties;
+import lombok.RequiredArgsConstructor;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.ssl.SSLContextBuilder;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.metrics.web.client.MetricsRestTemplateCustomizer;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,7 +19,6 @@ import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.context.annotation.RequestScope;
 
 import javax.net.ssl.SSLContext;
 import java.security.KeyManagementException;
@@ -26,7 +27,28 @@ import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 
 @Configuration
+@RequiredArgsConstructor
+@EnableConfigurationProperties({RestTemplateProperties.class})
 public class RestTemplateConfiguration {
+
+    private final RestTemplateProperties restTemplateProperties;
+
+    @Bean
+    public PoolingHttpClientConnectionManager poolingHttpClientConnectionManager() {
+        PoolingHttpClientConnectionManager result = new PoolingHttpClientConnectionManager();
+        result.setMaxTotal(restTemplateProperties.getMaxTotalPooling());
+        result.setDefaultMaxPerRoute(restTemplateProperties.getDefaultMaxPerRoute());
+        return result;
+    }
+
+    @Bean
+    public RequestConfig requestConfig() {
+        return RequestConfig.custom()
+                .setConnectionRequestTimeout(restTemplateProperties.getPoolTimeout())
+                .setConnectTimeout(restTemplateProperties.getConnectionTimeout())
+                .setSocketTimeout(restTemplateProperties.getRequestTimeout())
+                .build();
+    }
 
     @Bean
     public SSLContext sslContext() throws KeyStoreException, NoSuchAlgorithmException, KeyManagementException {
@@ -36,11 +58,17 @@ public class RestTemplateConfiguration {
     }
 
     @Bean
-    public CloseableHttpClient httpClient(SSLContext sslContext) {
+    public CloseableHttpClient httpClient(
+            PoolingHttpClientConnectionManager manager,
+            RequestConfig requestConfig,
+            SSLContext sslContext) {
         return HttpClients.custom()
                 .setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE)
                 .setSSLContext(sslContext)
+                .setConnectionManager(manager)
+                .setDefaultRequestConfig(requestConfig)
                 .disableAutomaticRetries()
+                .setConnectionManagerShared(true)
                 .build();
     }
 
@@ -62,14 +90,10 @@ public class RestTemplateConfiguration {
     }
 
     @Bean
-    // TODO: 14/11/2018 fix integrations test: change {@Autowired ServerHandler serverHandler} to thriftClient
-    @RequestScope
-    public RestTemplate restTemplate(RestTemplateBuilder restTemplateBuilder,
-                                     @Value("${restTemplate.networkTimeout}") int networkTimeout) {
-        int executionTimeout = ContextUtils.getExecutionTimeout(TraceContext.getCurrentTraceData().getServiceSpan(), networkTimeout);
+    public RestTemplate createRestTemplate(RestTemplateBuilder restTemplateBuilder) {
         RestTemplate restTemplate = restTemplateBuilder
-                .setConnectTimeout(Duration.ofMillis(executionTimeout))
-                .setReadTimeout(Duration.ofMillis(executionTimeout))
+                .setConnectTimeout(Duration.ofMillis(restTemplateProperties.getConnectionTimeout()))
+                .setReadTimeout(Duration.ofMillis(restTemplateProperties.getRequestTimeout()))
                 .build();
         restTemplate.setErrorHandler(getDefaultResponseErrorHandler());
         setMessageConverter(restTemplate);
